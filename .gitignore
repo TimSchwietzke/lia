@@ -1,0 +1,18 @@
+# Real question banks may contain lecture content: they must never enter git history.
+# Only the example bank is tracked.
+subjects/*
+!subjects/example.json
+
+# Local progress, settings, backups, exam exports
+data/
+
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+src-tauri/target/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.log
