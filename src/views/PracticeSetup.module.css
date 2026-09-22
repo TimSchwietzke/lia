@@ -1,0 +1,61 @@
+.page {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 28px 48px 96px;
+}
+
+.page > :global(.btn-ghost):first-child {
+  margin-left: -1.25em;
+}
+
+.title {
+  margin: 28px 0 40px;
+  font-size: 2.1rem;
+  text-wrap: balance;
+}
+
+.group {
+  margin-bottom: 36px;
+}
+
+.group h2 {
+  margin-bottom: 14px;
+  font-size: 1.05rem;
+}
+
+.groupHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.groupHead h2 {
+  margin: 0;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footer {
+  margin-top: 48px;
+}
+
+.noMatch {
+  color: var(--ink-soft);
+}
+
+.danger {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 72px;
+  color: var(--ink-soft);
+}
+
+.danger > :global(.btn-ghost):only-child {
+  margin-left: -1.25em;
+}

@@ -1,0 +1,54 @@
+.dropOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  pointer-events: none;
+}
+
+.dropWell {
+  display: grid;
+  place-items: center;
+  width: min(640px, 100%);
+  height: min(360px, 70vh);
+  border-radius: var(--radius-slab);
+  background: var(--sunken);
+  box-shadow: var(--pressed);
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.notices {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: min(560px, calc(100% - 32px));
+  transform: translateX(-50%);
+}
+
+.notice {
+  max-width: 100%;
+  padding: 0.8em 1.3em;
+  border: 0;
+  border-radius: var(--radius-tile);
+  background: var(--primary);
+  color: var(--on-primary);
+  box-shadow: var(--raised-dark);
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+}
+
+.notice[data-kind='error'] {
+  background: var(--bad-bg);
+  color: var(--ink);
+  box-shadow: var(--raised-sm);
+}

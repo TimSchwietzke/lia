@@ -1,0 +1,215 @@
+{
+  "format": "lia-bank",
+  "formatVersion": 1,
+  "course": {
+    "id": "example-algorithms",
+    "name": "Algorithms & Data Structures",
+    "version": "1.0",
+    "emoji": "🌳",
+    "color": "mint",
+    "language": "en"
+  },
+  "topics": ["Complexity", "Sorting", "Graphs", "Hashing"],
+  "questions": [
+    {
+      "id": "complexity-fib-calls",
+      "topic": "Complexity",
+      "type": "single_choice",
+      "difficulty": 2,
+      "tags": ["recursion"],
+      "source": "Lecture 2, slide 14",
+      "prompt": "How many calls to `f` in total does `f(5)` make, including the first one?\n\n```python\ndef f(n):\n    if n <= 1:\n        return n\n    return f(n - 1) + f(n - 2)\n```",
+      "options": [
+        { "text": "15", "correct": true },
+        { "text": "5", "correct": false, "why": "That is the value `f(5)` returns, not the number of calls." },
+        { "text": "9", "correct": false, "why": "That is the number of calls for `f(4)`." },
+        { "text": "32", "correct": false, "why": "$2^n$ is an upper bound, but it is not tight." }
+      ],
+      "explanation": "The number of calls satisfies $C(n) = 1 + C(n-1) + C(n-2)$ with $C(0) = C(1) = 1$, which gives $C(2) = 3$, $C(3) = 5$, $C(4) = 9$ and $C(5) = 15$."
+    },
+    {
+      "id": "sorting-quicksort-average",
+      "topic": "Sorting",
+      "type": "single_choice",
+      "difficulty": 1,
+      "tags": ["quicksort"],
+      "source": "Lecture 4, slide 12",
+      "prompt": "What is the average-case running time of Quicksort on $n$ elements?",
+      "options": [
+        { "text": "$O(n \\log n)$", "correct": true },
+        { "text": "$O(n^2)$", "correct": false, "why": "That is the worst case, e.g. when the pivot is always the smallest element." },
+        { "text": "$O(n)$", "correct": false, "why": "Comparison-based sorting needs $\\Omega(n \\log n)$ comparisons in the worst and average case." },
+        { "text": "$O(\\log n)$", "correct": false, "why": "Every element has to be examined at least once, so the time is at least linear." }
+      ],
+      "explanation": "With a random pivot the expected recursion depth is $O(\\log n)$, and each level of the recursion does $O(n)$ work for partitioning."
+    },
+    {
+      "id": "graphs-unweighted-shortest-path",
+      "topic": "Graphs",
+      "type": "single_choice",
+      "difficulty": 1,
+      "tags": ["bfs", "shortest-path"],
+      "source": "Lecture 7, slide 5",
+      "prompt": "Which algorithm finds shortest paths (by number of edges) from one start vertex in an **unweighted** graph in $O(V + E)$?",
+      "options": [
+        { "text": "Breadth-first search", "correct": true },
+        { "text": "Depth-first search", "correct": false, "why": "DFS does not visit vertices in order of their distance from the start." },
+        { "text": "Prim's algorithm", "correct": false, "why": "Prim computes a minimum spanning tree, not shortest paths." },
+        { "text": "Topological sort", "correct": false, "why": "It orders the vertices of a DAG, it does not compute distances." }
+      ],
+      "explanation": "BFS processes vertices level by level, so the first time it reaches a vertex is along a path with the fewest edges."
+    },
+    {
+      "id": "sorting-stable-algorithms",
+      "topic": "Sorting",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "tags": ["stability"],
+      "source": "Lecture 4, slide 30",
+      "prompt": "Which of these sorting algorithms are **stable** in their standard implementation?",
+      "options": [
+        { "text": "Merge sort", "correct": true },
+        { "text": "Insertion sort", "correct": true },
+        { "text": "Quicksort", "correct": false, "why": "Partitioning can move an element past an equal one." },
+        { "text": "Heapsort", "correct": false, "why": "Building and emptying the heap reorders equal keys." }
+      ],
+      "explanation": "A sort is stable if elements with equal keys keep their relative order. Merge sort takes from the left half on ties, insertion sort never moves an element past an equal one."
+    },
+    {
+      "id": "graphs-dijkstra-facts",
+      "topic": "Graphs",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "tags": ["dijkstra", "shortest-path"],
+      "source": "Lecture 7, slide 18",
+      "prompt": "Which statements about Dijkstra's algorithm are true?",
+      "options": [
+        { "text": "It requires non-negative edge weights.", "correct": true },
+        { "text": "With a binary heap it runs in $O((V + E) \\log V)$.", "correct": true },
+        { "text": "It handles graphs with negative cycles.", "correct": false, "why": "With a negative cycle, shortest paths are not even defined." },
+        { "text": "It computes a minimum spanning tree.", "correct": false, "why": "That is Prim's algorithm, which looks similar but minimizes a different value." }
+      ],
+      "explanation": "Dijkstra finalizes the vertex with the smallest tentative distance. That is only safe if no later edge can make a path shorter, i.e. if all weights are non-negative."
+    },
+    {
+      "id": "hashing-collision-resolution",
+      "topic": "Hashing",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "tags": ["collisions"],
+      "source": "Lecture 9, slide 8",
+      "prompt": "Which techniques resolve collisions in a hash table?",
+      "options": [
+        { "text": "Separate chaining", "correct": true },
+        { "text": "Linear probing", "correct": true },
+        { "text": "Double hashing", "correct": true },
+        { "text": "Binary search on the bucket array", "correct": false, "why": "The bucket array is not sorted, and binary search does not decide where a colliding key goes." }
+      ],
+      "explanation": "Chaining stores colliding keys in a list per bucket. Linear probing and double hashing are open addressing schemes that search for another free slot."
+    },
+    {
+      "id": "complexity-big-theta-definition",
+      "topic": "Complexity",
+      "type": "flashcard",
+      "difficulty": 1,
+      "tags": ["asymptotics"],
+      "source": "Lecture 1, slide 22",
+      "front": "Definition of $f \\in \\Theta(g)$",
+      "back": "There are constants $c_1, c_2 > 0$ and $n_0$ such that\n\n$$c_1 \\cdot g(n) \\le f(n) \\le c_2 \\cdot g(n) \\quad \\text{for all } n \\ge n_0.$$"
+    },
+    {
+      "id": "graphs-adjacency-list-space",
+      "topic": "Graphs",
+      "type": "flashcard",
+      "difficulty": 1,
+      "tags": ["representation"],
+      "source": "Lecture 6, slide 9",
+      "front": "Space needed by an adjacency list for a graph with $V$ vertices and $E$ edges",
+      "back": "$\\Theta(V + E)$",
+      "explanation": "An adjacency matrix needs $\\Theta(V^2)$ instead, which only pays off for dense graphs."
+    },
+    {
+      "id": "hashing-load-factor",
+      "topic": "Hashing",
+      "type": "flashcard",
+      "difficulty": 1,
+      "source": "Lecture 9, slide 12",
+      "front": "What is the load factor $\\alpha$ of a hash table?",
+      "back": "$\\alpha = n / m$, the number of stored keys $n$ divided by the number of buckets $m$."
+    },
+    {
+      "id": "sorting-merge-sort-cloze",
+      "topic": "Sorting",
+      "type": "cloze",
+      "difficulty": 1,
+      "tags": ["merge-sort"],
+      "source": "Lecture 4, slide 20",
+      "text": "Merge sort splits the input into {{1}} halves, sorts them recursively and then {{2}} them. The recurrence $T(n) = 2T(n/2) + \\Theta(n)$ solves to {{3}}.",
+      "blanks": [
+        { "answers": ["two", "2"], "ignoreCase": true },
+        { "answers": ["merges", "combines"], "ignoreCase": true },
+        { "answers": ["Θ(n log n)", "O(n log n)", "n log n"], "ignoreCase": true, "ignoreWhitespace": true }
+      ],
+      "explanation": "There are $\\log_2 n$ levels of recursion and merging costs $\\Theta(n)$ per level."
+    },
+    {
+      "id": "sorting-heap-array-indices",
+      "topic": "Sorting",
+      "type": "cloze",
+      "difficulty": 2,
+      "tags": ["heap"],
+      "source": "Lecture 5, slide 6",
+      "text": "In a binary heap stored in a 0-based array, the children of index `i` are at `{{1}}` and `{{2}}`.",
+      "blanks": [
+        { "answers": ["2i+1", "2*i+1", "i*2+1"], "ignoreWhitespace": true },
+        { "answers": ["2i+2", "2*i+2", "i*2+2"], "ignoreWhitespace": true }
+      ],
+      "explanation": "The root is at index 0, so its children are at 1 and 2. With 1-based indexing the formulas would be $2i$ and $2i + 1$."
+    },
+    {
+      "id": "graphs-bfs-code-cloze",
+      "topic": "Graphs",
+      "type": "cloze",
+      "difficulty": 2,
+      "tags": ["bfs", "python"],
+      "source": "Exercise sheet 6, task 2",
+      "text": "Complete the breadth-first search.\n\n```python\nfrom collections import deque\n\ndef bfs(graph, start):\n    visited = {start}\n    queue = deque([start])\n    while queue:\n        node = queue.{{1}}()\n        for neighbor in graph[node]:\n            if neighbor not in {{2}}:\n                visited.add(neighbor)\n                queue.append(neighbor)\n    return visited\n```",
+      "blanks": [{ "answers": ["popleft"] }, { "answers": ["visited"] }],
+      "explanation": "BFS takes vertices from the **front** of the queue (`popleft`). Marking a vertex as visited when it is enqueued ensures that every vertex enters the queue at most once."
+    },
+    {
+      "id": "complexity-dynamic-array-amortized",
+      "topic": "Complexity",
+      "type": "free_text",
+      "difficulty": 3,
+      "tags": ["amortized-analysis"],
+      "source": "Lecture 3, slides 8-11",
+      "prompt": "Explain why appending to a dynamic array (e.g. a Python `list` or a Java `ArrayList`) takes amortized $O(1)$ time, although a single append can take $O(n)$.",
+      "modelAnswer": "When the array is full, a new array with double the capacity is allocated and all elements are copied, which costs $O(n)$. Because the capacity doubles, the next resize only happens after as many cheap appends. Over $n$ appends the copying costs at most $1 + 2 + 4 + \\dots + n < 2n$, so all $n$ appends take $O(n)$ in total and $O(1)$ each on average.",
+      "keyPoints": [
+        "A full array is copied into a larger one, which costs $O(n)$",
+        "The capacity grows by a constant factor (e.g. doubles), not by a constant amount",
+        "The total copying cost over $n$ appends is $O(n)$",
+        "Dividing the total cost by $n$ appends gives $O(1)$ per append"
+      ],
+      "explanation": "Growing by a constant amount instead (e.g. +10) would make the total copying cost $\\Theta(n^2)$."
+    },
+    {
+      "id": "graphs-bfs-vs-dfs",
+      "topic": "Graphs",
+      "type": "free_text",
+      "difficulty": 2,
+      "tags": ["bfs", "dfs"],
+      "source": "Lecture 6, slides 20-24",
+      "prompt": "Compare BFS and DFS: which data structure does each one use, and name one problem each one is well suited for.",
+      "modelAnswer": "BFS uses a **queue** and visits vertices in order of their distance from the start, so it finds shortest paths in unweighted graphs. DFS uses a **stack** (or recursion) and goes as deep as possible first, which suits topological sorting, cycle detection and finding strongly connected components.",
+      "keyPoints": [
+        "BFS uses a queue",
+        "DFS uses a stack or recursion",
+        "BFS finds shortest paths in unweighted graphs",
+        "DFS suits e.g. topological sorting, cycle detection or SCCs"
+      ],
+      "explanation": "Both run in $O(V + E)$ with an adjacency list. They differ only in the order in which they visit vertices."
+    }
+  ]
+}

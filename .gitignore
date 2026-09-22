@@ -1,7 +1,8 @@
 # Real question banks may contain lecture content: they must never enter git history.
-# Only the example bank is tracked.
+# Only the example banks are tracked.
 subjects/*
 !subjects/example.json
+!subjects/example-images.zip
 
 # Local progress, settings, backups, exam exports
 data/

@@ -1,0 +1,233 @@
+.page {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 36px 48px 96px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 44px;
+}
+
+.wordmark {
+  font-size: 2.4rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Segmented control: a sunken track, the active option is a raised clay key. */
+.segmented {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--sunken);
+  box-shadow: var(--pressed);
+}
+
+.segmented button {
+  display: grid;
+  place-items: center;
+  min-width: 38px;
+  height: 36px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition:
+    background-color 140ms,
+    box-shadow 140ms var(--ease),
+    color 140ms;
+}
+
+.segmented button[aria-checked='true'] {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--raised-sm);
+}
+
+.segmented svg {
+  width: 18px;
+  height: 18px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 32px;
+}
+
+/* Course card: a tinted clay slab. The Practice button stretches over the whole card. */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 250px;
+  padding: 24px 24px 22px;
+  border-radius: var(--radius-slab);
+  background: var(--tint);
+  box-shadow: var(--raised);
+  transition:
+    transform 160ms var(--ease),
+    box-shadow 160ms var(--ease);
+}
+
+.card:has(.cardAction:hover) {
+  transform: translateY(-3px);
+}
+
+.card:has(.cardAction:active) {
+  transform: scale(0.975);
+  box-shadow: var(--raised-sm);
+}
+
+.cardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.emoji {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--tint) 70%, var(--bg));
+  box-shadow: var(--pressed);
+  font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', var(--font);
+  font-size: 1.7rem;
+  font-weight: 900;
+}
+
+.cardTitle {
+  font-size: 1.3rem;
+  text-wrap: balance;
+}
+
+.cardMeta {
+  margin: 6px 0 22px;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.cardAction {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+.cardAction::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.card:has(.cardAction:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+
+.cardAction:focus-visible {
+  outline: none;
+}
+
+.addTile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 250px;
+  padding: 28px;
+  border: 0;
+  border-radius: var(--radius-slab);
+  background: transparent;
+  box-shadow: var(--pressed);
+  color: var(--ink-soft);
+  font-weight: 650;
+  text-align: center;
+  cursor: pointer;
+  transition: color 140ms;
+}
+
+.addTile:hover {
+  color: var(--ink);
+}
+
+.addTile svg {
+  width: 28px;
+  height: 28px;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 88px 32px;
+  border: 0;
+  border-radius: var(--radius-slab);
+  background: transparent;
+  box-shadow: var(--pressed);
+  text-align: center;
+  cursor: pointer;
+}
+
+.emptyTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.emptyBody {
+  max-width: 44ch;
+  margin-bottom: 10px;
+  color: var(--ink-soft);
+}
+
+.error {
+  margin-bottom: 28px;
+  padding: 20px 24px;
+  border-radius: var(--radius-tile);
+  background: var(--bad-bg);
+  box-shadow: var(--raised-sm);
+}
+
+.errorHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.errorTitle {
+  font-size: 1.1rem;
+}
+
+.errorHint {
+  margin: 4px 0 0;
+  color: var(--ink-soft);
+}
+
+.errorList {
+  margin: 14px 0 0;
+  padding-left: 1.2em;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}

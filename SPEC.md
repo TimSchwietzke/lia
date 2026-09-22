@@ -122,3 +122,16 @@ Select questions (by course, topic, tag, or hand-picked with checkboxes) and exp
 ### M7 – Gamification
 
 XP, levels, daily streak, plus a small meta-game: earn coins, spend them in a shop on upgrades for something that grows over time. Coins must reward real learning: more for due reviews, hard questions, and exam simulations; diminishing returns for repeating easy questions I already know. Before implementing, propose 3 meta-game themes with a short description each and wait for my choice.
+
+## Decisions
+
+Agreed during planning (2026-09-23). Later sessions: treat these as part of the spec.
+
+- **Name:** the app is called **lia** everywhere (window title, wordmark, portable folder `lia/`, binaries `lia.exe` / `lia.app` / `lia.AppImage`). "learn it all" is not shown in the UI.
+- **Look:** no vibecoded tells: no filler text, no decorative gradients, no em dashes in UI strings or docs.
+- **Bank format:** `format: "lia-bank"`, `formatVersion: 1`, topics are plain strings, course colour is one of six named pastels, strict validation (unknown fields are errors). Full spec in `QUESTION_FORMAT.md`.
+- **Example banks:** `subjects/example.json` (all question types) and `subjects/example-images.zip` (with an `images/` folder). Both ship in `subjects/` and are the only tracked files there.
+- **Scoring:** single choice all or nothing; multiple choice = share of options judged right, correct only if all; cloze = share of blanks; flashcard again 0 / hard 0.5 / good 1 / easy 1 (only "again" is wrong); free text = share of key points, correct from 75 %.
+- **Import:** a bank with an existing course id replaces the old file and keeps progress (notice, no confirm dialog); duplicate course ids on disk: first file wins, the other is shown as an error.
+- **Stack:** Vite 8, React 19, TypeScript strict, Zod 4, Dexie 4, Zustand, react-markdown + remark-gfm + remark-math + rehype-katex, Shiki (JS regex engine, bundled languages, Catppuccin themes), fflate, Motion, i18next, lucide-react, Fontsource (Nunito, JetBrains Mono), CSS Modules. Lint: oxlint (the current Vite template default) + Prettier.
+- **Highlighted languages:** python, java, c, cpp, csharp, javascript, typescript, sql, bash, haskell, prolog, rust, go, kotlin, json, yaml, html, xml, css, latex, asm.
