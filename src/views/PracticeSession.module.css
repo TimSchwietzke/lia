@@ -1,49 +1,36 @@
 .page {
-  max-width: 800px;
+  width: min(760px, 100%);
   margin: 0 auto;
-  padding: 20px 48px 96px;
+  padding-bottom: 48px;
 }
 
 .bar {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin: 0 0 48px -10px;
+  margin-bottom: 40px;
 }
 
-.track {
-  flex: 1;
-  height: 10px;
-  border-radius: 999px;
-  background: var(--sunken);
-  box-shadow: var(--pressed);
-  overflow: hidden;
-}
-
-.track > div {
-  height: 100%;
-  border-radius: inherit;
-  background: var(--accent);
-  transition: width 300ms var(--ease);
+.end {
+  width: 36px;
+  height: 36px;
+  flex: none;
 }
 
 .count {
-  min-width: 4.5ch;
-  color: var(--ink-soft);
-  font-weight: 700;
-  font-size: 0.95rem;
-  font-variant-numeric: tabular-nums;
+  min-width: 5ch;
+  color: var(--text-muted);
+  font-size: 13px;
   text-align: right;
 }
 
 .meta {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 14px;
-  color: var(--ink-soft);
-  font-weight: 650;
-  font-size: 0.95rem;
+  gap: 12px;
+  margin-bottom: 16px;
+  color: var(--text-muted);
+  font-size: 13px;
 }
 
 .difficulty {
@@ -52,46 +39,50 @@
 }
 
 .difficulty > span {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: var(--subtle);
+  box-shadow: var(--sunk-xs);
 }
 
 .difficulty > span[data-on='true'] {
-  background: var(--accent);
+  background: var(--course);
+  box-shadow: none;
 }
 
 .summary {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 72px 48px 96px;
+  gap: 16px;
+  width: min(560px, 100%);
+  margin: 48px auto 0;
+  padding: 32px 28px;
   text-align: center;
 }
 
-.summary h1 {
-  margin-top: 28px;
-  font-size: 2rem;
+.score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
 }
 
-.summaryLine {
-  margin: 8px 0 0;
-  color: var(--ink-soft);
-  font-size: 1.1rem;
+.big {
+  font-family: var(--font-display);
+  font-size: 64px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  line-height: 1;
 }
 
-.time {
-  margin: 4px 0 40px;
-  color: var(--ink-soft);
-  font-variant-numeric: tabular-nums;
+.muted {
+  color: var(--text-muted);
+  font-size: 14px;
 }
 
 .summaryActions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 14px;
+  gap: 12px;
+  margin-top: 12px;
 }

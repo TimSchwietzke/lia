@@ -1,5 +1,5 @@
 import { Dexie, type EntityTable } from 'dexie'
-import { DEFAULT_SETTINGS, type Attempt, type Settings, type Storage } from './types'
+import { DEFAULT_SETTINGS, type Attempt, type CourseSettings, type Settings, type Storage } from './types'
 
 type StoredBankFile = { name: string; data: Uint8Array; updatedAt: string }
 type StoredSettings = Settings & { id: 'settings' }
@@ -8,14 +8,16 @@ const db = new Dexie('lia') as Dexie & {
   bankFiles: EntityTable<StoredBankFile, 'name'>
   attempts: EntityTable<Attempt, 'id'>
   settings: EntityTable<StoredSettings, 'id'>
+  courseSettings: EntityTable<CourseSettings, 'courseId'>
 }
 
-// To change the schema or migrate records, add db.version(2).stores(...).upgrade(...); never edit version 1.
+// To change the schema or migrate records, add a new db.version(n); never edit existing versions.
 db.version(1).stores({
   bankFiles: 'name',
   attempts: 'id, courseId, answeredAt',
   settings: 'id',
 })
+db.version(2).stores({ courseSettings: 'courseId' })
 
 // Dev build only: also read the banks in the repo's subjects/ folder, like the desktop app does.
 // Guarded by DEV so a production build never bundles local (possibly private) banks.
@@ -56,6 +58,16 @@ export const dexieStorage: Storage = {
   async addAttempt(attempt) {
     const stored = { ...attempt, updatedAt: now() }
     await db.attempts.add(stored)
+    return stored
+  },
+
+  listCourseSettings() {
+    return db.courseSettings.toArray()
+  },
+
+  async saveCourseSettings(settings) {
+    const stored = { ...settings, updatedAt: now() }
+    await db.courseSettings.put(stored)
     return stored
   },
 

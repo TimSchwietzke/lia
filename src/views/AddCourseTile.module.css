@@ -1,0 +1,60 @@
+.drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 200px;
+  padding: 20px;
+  border: 0;
+  border-radius: var(--r-panel);
+  background: var(--base);
+  box-shadow: var(--sunk-lg);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: box-shadow var(--press);
+}
+
+.drop:hover {
+  box-shadow: var(--sunk-lg-hover);
+}
+
+.wide {
+  grid-column: 1 / -1;
+  min-height: 150px;
+}
+
+/* The plus is a key inside a larger click target: it lifts and sinks with the tile. */
+.plus {
+  --key-shadow: var(--key-md);
+  width: 48px;
+  height: 48px;
+  border-radius: var(--r-well);
+  color: var(--accent);
+  pointer-events: none;
+}
+
+.plus svg {
+  width: 20px;
+  height: 20px;
+}
+
+.drop:hover .plus {
+  transform: translateY(-1px);
+}
+
+.drop:active .plus {
+  transform: translateY(1px);
+  background: var(--base);
+  box-shadow: var(--key-down);
+}
+
+.title {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.hint {
+  font-size: 12px;
+}

@@ -104,7 +104,7 @@ export const bankSchema = z
       id,
       name: text,
       version: z.union([text, z.number().transform(String)]),
-      emoji: text.optional(),
+      code: z.string().regex(/^[\p{L}\p{N}]{2,3}$/u, 'use 2 or 3 letters or digits, e.g. "AD"'),
       color: z.enum(COURSE_COLORS).optional(),
       language: text.optional(),
     }),

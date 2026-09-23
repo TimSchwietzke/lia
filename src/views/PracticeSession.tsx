@@ -3,10 +3,12 @@ import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { courseColor, type Question } from '../bank/schema'
+import { formatPercent } from '../i18n'
 import { grade, type Answer, type Grade } from '../practice/grade'
-import { useStore, type Course } from '../state/store'
+import type { QuestionRef } from '../practice/stats'
+import { findCourse, useStore, type Course } from '../state/store'
 import { ImagesContext } from '../ui/markdownContext'
-import { ProgressRing } from '../ui/ProgressRing'
+import { Bar, CodeBadge, Key, Label, Panel } from '../ui/primitives'
 import { useHotkeys } from '../ui/useHotkeys'
 import styles from './PracticeSession.module.css'
 import { ChoiceQuestion } from './questions/ChoiceQuestion'
@@ -14,101 +16,109 @@ import { ClozeQuestion } from './questions/ClozeQuestion'
 import { FlashcardQuestion } from './questions/FlashcardQuestion'
 import { FreeTextQuestion } from './questions/FreeTextQuestion'
 
-type Result = { questionId: string; grade: Grade }
+type Item = { ref: QuestionRef; course: Course; question: Question }
 
-export function PracticeSession({ course, questionIds }: { course: Course; questionIds: string[] }) {
+const msSince = (start: number) => Math.round(performance.now() - start)
+type Result = { ref: QuestionRef; grade: Grade }
+
+type Props = {
+  items: QuestionRef[]
+  /** Set when the session was planned in one course's practice setup. */
+  courseId?: string
+}
+
+export function PracticeSession({ items, courseId }: Props) {
   const { t } = useTranslation()
   const go = useStore((s) => s.go)
+  const courses = useStore((s) => s.courses)
   const recordAttempt = useStore((s) => s.recordAttempt)
-  const { course: meta } = course.bank
 
-  // Questions deleted from the bank since the session was planned are skipped.
-  const questions = useMemo(
+  // Questions whose course or bank entry disappeared since the session was planned are skipped.
+  const queue = useMemo(
     () =>
-      questionIds.flatMap((id) => {
-        const q = course.bank.questions.find((q) => q.id === id)
-        return q ? [q] : []
+      items.flatMap((ref): Item[] => {
+        const course = findCourse(courses, ref.courseId)
+        const question = course?.bank.questions.find((q) => q.id === ref.questionId)
+        return course && question ? [{ ref, course, question }] : []
       }),
-    [course, questionIds],
+    [items, courses],
   )
   const [index, setIndex] = useState(0)
   const [results, setResults] = useState<Result[]>([])
   const [startedAt] = useState(() => Date.now())
   const [finishedAt, setFinishedAt] = useState<number | null>(null)
   const shownAt = useRef(0)
-  const question = questions.at(index)
+  const current = queue.at(index)
 
   useEffect(() => {
     shownAt.current = performance.now()
   }, [index])
 
   const submit = (answer: Answer): Grade => {
-    if (!question) throw new Error('No current question')
-    const result = grade(question, answer)
-    setResults((r) => [...r, { questionId: question.id, grade: result }])
+    if (!current) throw new Error('No current question')
+    const result = grade(current.question, answer)
+    setResults((r) => [...r, { ref: current.ref, grade: result }])
     void recordAttempt({
-      courseId: meta.id,
-      questionId: question.id,
+      courseId: current.ref.courseId,
+      questionId: current.ref.questionId,
       mode: 'practice',
       answer,
       score: result.score,
       correct: result.correct,
       answeredAt: new Date().toISOString(),
-      durationMs: Math.round(performance.now() - shownAt.current),
+      durationMs: msSince(shownAt.current),
     })
     return result
   }
   const finish = () => setFinishedAt(Date.now())
-  const next = () => (index + 1 < questions.length ? setIndex(index + 1) : finish())
-  const end = () => (results.length ? finish() : go({ name: 'dashboard' }))
+  const next = () => (index + 1 < queue.length ? setIndex(index + 1) : finish())
+  const end = () => (results.length ? finish() : go({ name: 'overview' }))
 
-  if (finishedAt !== null || !question) {
-    return <Summary course={course} results={results} elapsedMs={(finishedAt ?? startedAt) - startedAt} />
+  if (finishedAt !== null || !current) {
+    return <Summary results={results} elapsedMs={(finishedAt ?? startedAt) - startedAt} courseId={courseId} />
   }
 
+  const meta = current.course.bank.course
   return (
     <div className={styles.page} data-color={courseColor(meta)}>
       <SessionHotkeys onEscape={end} />
       <header className={styles.bar}>
-        <button
-          type="button"
-          className="btn btn-ghost icon-btn"
+        <Key
+          size="icon"
+          className={styles.end}
           onClick={end}
           aria-label={t('session.end')}
           title={t('session.end')}
         >
           <X aria-hidden />
-        </button>
-        <div
-          className={styles.track}
-          role="progressbar"
-          aria-valuemin={0}
-          aria-valuemax={questions.length}
-          aria-valuenow={index}
-          aria-label={t('session.progress', { current: index + 1, total: questions.length })}
-        >
-          <div style={{ width: `${(index / questions.length) * 100}%` }} />
-        </div>
-        <span className={styles.count}>
-          {index + 1} / {questions.length}
+        </Key>
+        <Bar
+          value={index / queue.length}
+          color="var(--course)"
+          thick
+          label={t('session.progress', { current: index + 1, total: queue.length })}
+        />
+        <span className={`mono ${styles.count}`}>
+          {index + 1} / {queue.length}
         </span>
       </header>
 
-      <ImagesContext.Provider value={course.imageUrls}>
+      <ImagesContext.Provider value={current.course.imageUrls}>
         <AnimatePresence mode="wait" initial={false}>
           <motion.article
             key={index}
             lang={meta.language}
-            initial={{ opacity: 0, x: 16 }}
+            initial={{ opacity: 0, x: 12 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -16 }}
-            transition={{ duration: 0.15 }}
+            exit={{ opacity: 0, x: -12 }}
+            transition={{ duration: 0.14 }}
           >
             <div className={styles.meta}>
-              <span>{question.topic}</span>
-              <Difficulty level={question.difficulty} />
+              <CodeBadge code={meta.code} small />
+              <span>{current.question.topic}</span>
+              <Difficulty level={current.question.difficulty} />
             </div>
-            <QuestionView question={question} onSubmit={submit} onNext={next} />
+            <QuestionView question={current.question} onSubmit={submit} onNext={next} />
           </motion.article>
         </AnimatePresence>
       </ImagesContext.Provider>
@@ -148,53 +158,59 @@ function Difficulty({ level }: { level: number }) {
   )
 }
 
-function Summary({ course, results, elapsedMs }: { course: Course; results: Result[]; elapsedMs: number }) {
+function Summary({
+  results,
+  elapsedMs,
+  courseId,
+}: {
+  results: Result[]
+  elapsedMs: number
+  courseId?: string
+}) {
   const { t } = useTranslation()
   const go = useStore((s) => s.go)
-  const { course: meta } = course.bank
+  const startSession = useStore((s) => s.startSession)
   const correct = results.filter((r) => r.grade.correct).length
   const average = results.length ? results.reduce((sum, r) => sum + r.grade.score, 0) / results.length : 0
-  const mistakes = results.filter((r) => !r.grade.correct).map((r) => r.questionId)
+  const mistakes = results.filter((r) => !r.grade.correct).map((r) => r.ref)
   const seconds = Math.round(elapsedMs / 1000)
 
-  const retry = () =>
-    go({ name: 'session', courseId: meta.id, questionIds: mistakes, sessionId: crypto.randomUUID() })
-  const newSession = () => go({ name: 'setup', courseId: meta.id })
-  const back = () => go({ name: 'dashboard' })
+  const retry = () => startSession(mistakes, courseId)
+  const back = () => go({ name: 'overview' })
   useHotkeys({ Enter: mistakes.length ? retry : back, Escape: back })
 
   return (
-    <div className={styles.summary} data-color={courseColor(meta)}>
-      <ProgressRing
-        value={average}
-        size={148}
-        label={`${t('summary.score')}: ${Math.round(average * 100)}%`}
-      />
-      <h1>{t('summary.title')}</h1>
-      <p className={styles.summaryLine}>{t('summary.correct', { count: correct, total: results.length })}</p>
-      <p className={styles.time}>
-        {seconds < 60
-          ? t('summary.durationShort', { seconds })
-          : t('summary.duration', { minutes: Math.floor(seconds / 60), seconds: seconds % 60 })}
+    <Panel className={styles.summary}>
+      <Label>{t('summary.label')}</Label>
+      <div className={styles.score}>
+        <span className={styles.big}>{formatPercent(average)}</span>
+        <span className={styles.muted}>{t('summary.score')}</span>
+      </div>
+      <p className={styles.muted}>
+        {t('summary.correct', { count: correct, total: results.length })} ·{' '}
+        <span className="mono">
+          {seconds < 60
+            ? t('summary.durationShort', { seconds })
+            : t('summary.duration', { minutes: Math.floor(seconds / 60), seconds: seconds % 60 })}
+        </span>
       </p>
       <div className={styles.summaryActions}>
         {mistakes.length > 0 && (
-          <button type="button" className="btn btn-primary" onClick={retry}>
-            {t('summary.retry', { count: mistakes.length })} <kbd>{t('keys.enter')}</kbd>
-          </button>
+          <Key variant="accent" size="lg" onClick={retry}>
+            {t('summary.retry', { count: mistakes.length })}
+            <kbd>{t('keys.enter')}</kbd>
+          </Key>
         )}
-        <button type="button" className="btn" onClick={newSession}>
-          {t('summary.again')}
-        </button>
-        <button
-          type="button"
-          className={mistakes.length ? 'btn btn-ghost' : 'btn btn-primary'}
-          onClick={back}
-        >
+        {courseId && (
+          <Key size="lg" onClick={() => go({ name: 'setup', courseId })}>
+            {t('summary.again')}
+          </Key>
+        )}
+        <Key size="lg" onClick={back}>
           {t('summary.back')}
           {!mistakes.length && <kbd>{t('keys.enter')}</kbd>}
-        </button>
+        </Key>
       </div>
-    </div>
+    </Panel>
   )
 }

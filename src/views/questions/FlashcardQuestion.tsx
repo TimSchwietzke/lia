@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { RATINGS, type Rating } from '../../practice/grade'
 import { Markdown } from '../../ui/Markdown'
+import { Key } from '../../ui/primitives'
 import { useHotkeys } from '../../ui/useHotkeys'
 import styles from './questions.module.css'
 import { ActionBar, Explanation, type QuestionProps } from './shared'
@@ -56,15 +57,15 @@ export function FlashcardQuestion({ question, onSubmit, onNext }: QuestionProps<
           <div className={styles.ratings}>
             <span className={styles.ratingLabel}>{t('flashcard.rate')}</span>
             {RATINGS.map((rating, i) => (
-              <button key={rating} type="button" className="btn" onClick={() => rate(rating)}>
+              <Key key={rating} size="md" onClick={() => rate(rating)}>
                 {t(`flashcard.${rating}`)} <kbd>{i + 1}</kbd>
-              </button>
+              </Key>
             ))}
           </div>
         ) : (
-          <button type="button" className="btn btn-primary" onClick={flip}>
+          <Key variant="accent" size="md" onClick={flip}>
             {t('flashcard.flip')} <kbd>{t('keys.space')}</kbd>
-          </button>
+          </Key>
         )}
       </ActionBar>
     </>

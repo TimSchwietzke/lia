@@ -1,11 +1,14 @@
 import { create } from 'zustand'
 import { loadBankFile, type LoadedBank } from '../bank/load'
 import i18n from '../i18n'
+import { shuffle } from '../practice/select'
 import { dexieStorage } from '../storage/dexie'
+import type { QuestionRef } from '../practice/stats'
 import {
   DEFAULT_SETTINGS,
   type Attempt,
   type BankFile,
+  type CourseSettings,
   type Settings,
   type Storage,
   type Unstamped,
@@ -29,9 +32,11 @@ export type Notice = {
 }
 
 export type View =
-  | { name: 'dashboard' }
+  | { name: 'overview' }
+  | { name: 'courses' }
   | { name: 'setup'; courseId: string }
-  | { name: 'session'; courseId: string; questionIds: string[]; sessionId: string }
+  /** `courseId` is set when the whole session comes from one course's practice setup. */
+  | { name: 'session'; items: QuestionRef[]; sessionId: string; courseId?: string }
 
 type State = {
   ready: boolean
@@ -39,6 +44,7 @@ type State = {
   courses: Course[]
   bankErrors: BankError[]
   attempts: Attempt[]
+  courseSettings: Record<string, CourseSettings>
   notices: Notice[]
   view: View
 }
@@ -49,10 +55,13 @@ type Actions = {
   importFiles(files: readonly File[]): Promise<void>
   removeCourse(courseId: string): Promise<void>
   recordAttempt(attempt: Omit<Unstamped<Attempt>, 'id'>): Promise<void>
+  setExamDate(courseId: string, examDate: string | undefined): Promise<void>
   updateSettings(patch: Partial<Omit<Settings, 'updatedAt'>>): Promise<void>
   dismissError(fileName: string): void
   dismissNotice(id: string): void
   go(view: View): void
+  /** Starts a practice session with these questions in random order. */
+  startSession(items: readonly QuestionRef[], courseId?: string): void
 }
 
 const MIME: Record<string, string> = {
@@ -77,13 +86,22 @@ export const useStore = create<State & Actions>()((set, get) => {
     courses: [],
     bankErrors: [],
     attempts: [],
+    courseSettings: {},
     notices: [],
-    view: { name: 'dashboard' },
+    view: { name: 'overview' },
 
     async init() {
-      const [settings, attempts] = await Promise.all([storage.loadSettings(), storage.listAttempts()])
+      const [settings, attempts, courseSettings] = await Promise.all([
+        storage.loadSettings(),
+        storage.listAttempts(),
+        storage.listCourseSettings(),
+      ])
       applySettings(settings)
-      set({ settings, attempts })
+      set({
+        settings,
+        attempts,
+        courseSettings: Object.fromEntries(courseSettings.map((c) => [c.courseId, c])),
+      })
       await get().reloadBanks()
       set({ ready: true })
     },
@@ -124,13 +142,22 @@ export const useStore = create<State & Actions>()((set, get) => {
       if (!course?.removable) return
       await storage.deleteBankFile(course.fileName)
       await get().reloadBanks()
-      set({ view: { name: 'dashboard' } })
+      set({ view: { name: 'courses' } })
       notify('removed', { name: course.bank.course.name })
     },
 
     async recordAttempt(attempt) {
       const stored = await storage.addAttempt({ ...attempt, id: crypto.randomUUID() })
       set((s) => ({ attempts: [...s.attempts, stored] }))
+    },
+
+    async setExamDate(courseId, examDate) {
+      const stored = await storage.saveCourseSettings({
+        ...get().courseSettings[courseId],
+        courseId,
+        examDate,
+      })
+      set((s) => ({ courseSettings: { ...s.courseSettings, [courseId]: stored } }))
     },
 
     async updateSettings(patch) {
@@ -150,6 +177,11 @@ export const useStore = create<State & Actions>()((set, get) => {
 
     go(view) {
       set({ view })
+    },
+
+    startSession(items, courseId) {
+      if (!items.length) return
+      set({ view: { name: 'session', items: shuffle(items), sessionId: crypto.randomUUID(), courseId } })
     },
   }
 })

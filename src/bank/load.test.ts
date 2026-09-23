@@ -11,7 +11,7 @@ type RawBank = Record<string, any>
 const validBank = (): RawBank => ({
   format: 'lia-bank',
   formatVersion: 1,
-  course: { id: 'test-course', name: 'Test', version: '1' },
+  course: { id: 'test-course', name: 'Test', version: '1', code: 'TC' },
   topics: ['A', 'B'],
   questions: [
     {
@@ -88,7 +88,7 @@ describe('QUESTION_FORMAT.md', () => {
 describe('bank validation', () => {
   it('accepts a minimal valid bank and a numeric course version', () => {
     const bank = validBank()
-    bank.course = { id: 'test-course', name: 'Test', version: 2 }
+    bank.course = { id: 'test-course', name: 'Test', version: 2, code: 'TC' }
     const result = loadBankFile('bank.json', json(bank))
     expect(result.ok && result.value.bank.course.version).toBe('2')
   })
@@ -141,6 +141,11 @@ describe('bank validation', () => {
     expect(errors).toHaveLength(2)
     expect(errors[0]).toMatch(/id: use lowercase letters/)
     expect(errors[1]).toMatch(/difficulty: Too big/)
+  })
+
+  it('requires a 2 or 3 character course code', () => {
+    expect(errorsFor((b) => delete b.course.code)[0]).toMatch(/^course.code: /)
+    expect(errorsFor((b) => (b.course.code = 'ALGO'))[0]).toMatch(/^course.code: use 2 or 3 letters/)
   })
 
   it('rejects banks from a newer app version', () => {

@@ -21,14 +21,18 @@ alongside the ones added by drag and drop. Only the two example banks in `subjec
 
 ## Code map
 
-| Path                 | What it does                                                                    |
-| -------------------- | ------------------------------------------------------------------------------- |
-| `src/bank/`          | Bank schema (Zod), loading `.json`/`.zip` files, readable errors                |
-| `src/practice/`      | Question selection, grading per question type, progress numbers                 |
-| `src/storage/`       | The storage interface and its IndexedDB implementation                          |
-| `src/state/store.ts` | App state (Zustand); the only code that talks to storage                        |
-| `src/lib/migrate.ts` | Version migrations for banks and saved data                                     |
-| `src/ui/`            | Markdown/KaTeX/code rendering, cloze blanks, shared widgets                     |
-| `src/views/`         | Dashboard, practice setup, practice session and one component per question type |
-| `src/i18n/`          | UI strings in English and German                                                |
-| `src/styles/`        | Design tokens (light and dark clay palettes) and shared styles                  |
+| Path                  | What it does                                                                           |
+| --------------------- | -------------------------------------------------------------------------------------- |
+| `src/bank/`           | Bank schema (Zod), loading `.json`/`.zip` files, readable errors                       |
+| `src/practice/`       | Question selection, grading per question type, stats behind the dashboard              |
+| `src/storage/`        | The storage interface and its IndexedDB implementation                                 |
+| `src/state/store.ts`  | App state (Zustand); the only code that talks to storage                               |
+| `src/lib/migrate.ts`  | Version migrations for banks and saved data                                            |
+| `src/styles/`         | Design tokens (dark and light neumorphic palettes) and base styles                     |
+| `src/ui/`             | Primitives (`Key`, `Panel`, `Chip`, `Bar`, `Segmented`), Markdown/KaTeX/code rendering |
+| `src/views/overview/` | The dashboard tiles                                                                    |
+| `src/views/`          | Header, Courses page, practice setup and session, one component per question type      |
+| `src/i18n/`           | UI strings in English and German                                                       |
+
+The visual reference is `design/dashboard-reference.dc.html`; the Design section of `SPEC.md` explains
+the raised / sunk / key grammar the components follow.

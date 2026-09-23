@@ -2,6 +2,7 @@ import { Check } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Markdown } from '../../ui/Markdown'
+import { Key } from '../../ui/primitives'
 import { useHotkeys } from '../../ui/useHotkeys'
 import styles from './questions.module.css'
 import { ActionBar, Explanation, Reveal, type QuestionProps } from './shared'
@@ -67,7 +68,7 @@ export function FreeTextQuestion({ question, onSubmit, onNext }: QuestionProps<'
                     }
                   }}
                 >
-                  <kbd className={styles.key}>{i + 1}</kbd>
+                  <kbd className={styles.num}>{i + 1}</kbd>
                   <Markdown>{point}</Markdown>
                   {covered.includes(i) && <Check className={styles.mark} aria-hidden />}
                 </div>
@@ -90,13 +91,13 @@ export function FreeTextQuestion({ question, onSubmit, onNext }: QuestionProps<'
 
       <ActionBar>
         {revealed ? (
-          <button type="button" className="btn btn-primary" onClick={finish}>
+          <Key variant="accent" size="md" onClick={finish}>
             {t('session.continue')} <kbd>{t('keys.enter')}</kbd>
-          </button>
+          </Key>
         ) : (
-          <button type="button" className="btn btn-primary" onClick={reveal}>
+          <Key variant="accent" size="md" onClick={reveal}>
             {t('freeText.reveal')} <kbd>{t('keys.ctrlEnter')}</kbd>
-          </button>
+          </Key>
         )}
       </ActionBar>
     </>

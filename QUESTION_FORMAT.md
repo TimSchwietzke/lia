@@ -34,7 +34,7 @@ Add a bank by dropping the file into the app window or into the `subjects/` fold
     "id": "algorithms",
     "name": "Algorithms & Data Structures",
     "version": "1.0",
-    "emoji": "🌳",
+    "code": "AD",
     "color": "mint",
     "language": "en"
   },
@@ -50,8 +50,8 @@ Add a bank by dropping the file into the app window or into the `subjects/` fold
 | `course.id`       | yes      | Stable id of the course, kebab-case. Progress belongs to this id, so never change it.                   |
 | `course.name`     | yes      | Display name.                                                                                           |
 | `course.version`  | yes      | Version of the bank, any string or number, e.g. `"1.0"` or `"2026-05-10"`. Increase it on every update. |
-| `course.emoji`    | no       | One emoji shown on the course card.                                                                     |
-| `course.color`    | no       | Card colour: `peach`, `mint`, `sky`, `lavender`, `lemon` or `rose`.                                     |
+| `course.code`     | yes      | 2 or 3 letters or digits shown on the course tile, e.g. `"AD"`. Uppercase reads best.                   |
+| `course.color`    | no       | Course colour: `peach`, `mint`, `sky`, `lavender`, `lemon` or `rose`. Without one the app picks one.    |
 | `course.language` | no       | Language of the content as a code like `"en"` or `"de"`. Used for hyphenation and screen readers.       |
 | `topics`          | yes      | Topic names, in the order they are taught. At least one.                                                |
 | `questions`       | yes      | The questions, at least one.                                                                            |

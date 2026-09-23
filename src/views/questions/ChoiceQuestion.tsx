@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import type { Grade } from '../../practice/grade'
 import { shuffle } from '../../practice/select'
 import { Markdown } from '../../ui/Markdown'
+import { Key } from '../../ui/primitives'
 import { useHotkeys } from '../../ui/useHotkeys'
 import styles from './questions.module.css'
 import { ActionBar, Feedback, type QuestionProps } from './shared'
@@ -70,7 +71,7 @@ export function ChoiceQuestion({
                 }
               }}
             >
-              <kbd className={styles.key}>{position + 1}</kbd>
+              <kbd className={styles.num}>{position + 1}</kbd>
               <div>
                 <Markdown>{option.text}</Markdown>
                 {grade && option.why && <Markdown className={styles.why}>{option.why}</Markdown>}
@@ -86,13 +87,13 @@ export function ChoiceQuestion({
 
       <ActionBar>
         {grade ? (
-          <button type="button" className="btn btn-primary" onClick={onNext}>
+          <Key variant="accent" size="md" onClick={onNext}>
             {t('session.continue')} <kbd>{t('keys.enter')}</kbd>
-          </button>
+          </Key>
         ) : (
-          <button type="button" className="btn btn-primary" onClick={check} disabled={!selected.length}>
+          <Key variant="accent" size="md" onClick={check} disabled={!selected.length}>
             {t('session.check')} <kbd>{t('keys.enter')}</kbd>
-          </button>
+          </Key>
         )}
       </ActionBar>
     </>

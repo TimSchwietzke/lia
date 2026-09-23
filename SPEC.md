@@ -38,8 +38,8 @@ Hard requirements:
 
 ## Portable folder layout (Tauri build)
 
-    ExamTrainer/
-      ExamTrainer(.exe / .app / .AppImage)
+    lia/
+      lia(.exe / .app / .AppImage)
       subjects/     <- question banks (.json or .zip), scanned at every app start + "reload" button
       data/         <- progress, settings, backups, exam exports (created automatically)
       README.txt    <- short guide for classmates (EN + DE)
@@ -122,3 +122,19 @@ Select questions (by course, topic, tag, or hand-picked with checkboxes) and exp
 
 **M7 – Gamification**
 XP, levels, daily streak, plus a small meta-game: earn coins, spend them in a shop on upgrades for something that grows over time. Coins must reward real learning: more for due reviews, hard questions, and exam simulations; diminishing returns for repeating easy questions I already know. Before implementing, propose 3 meta-game themes with a short description each and wait for my choice. The shop and meta-game follow the same visual language.
+
+## Decisions
+
+Agreed during planning. Later sessions: treat these as part of the spec.
+
+- **Name:** the app is called **lia** everywhere: logo, window title, binaries (`lia.exe`, `lia.app`, `lia.AppImage`) and the portable folder `lia/`.
+- **Bank format:** `format: "lia-bank"`, `formatVersion: 1`. `course.code` (2 or 3 letters or digits) is required and shown on the course tile; `course.color` is optional, one of `peach`, `mint`, `sky`, `lavender`, `lemon`, `rose`. Topics are plain strings. Validation is strict (unknown fields are errors). Full spec in `QUESTION_FORMAT.md`.
+- **Example banks:** `subjects/example.json` (all question types) and `subjects/example-images.zip` (with an `images/` folder) are the only tracked files in `subjects/`.
+- **Scoring:** single choice all or nothing; multiple choice = share of options judged right, correct only if all are; cloze = share of blanks; flashcard again 0 / hard 0.5 / good 1 / easy 1 (only "again" is wrong); free text = share of key points, correct from 75 %.
+- **Learned / weak / new (until M4):** a question is learned if its latest attempt was correct, weak if its latest attempt was wrong, new if it has no attempt. "Today" = all weak questions plus new ones, at most 20 new per day, across all courses. M4 replaces this with FSRS.
+- **Import:** a bank whose course id already exists replaces the old file and keeps progress (notice, no confirm dialog). Two files with the same course id on disk: the first wins, the other is shown as an error.
+- **Exam dates:** per-course user setting stored with the progress (`courseSettings`), set on the Courses page.
+- **Type sizes:** UI text 14px, question prompts 17px in the practice view.
+- **Mockup conventions:** where the design reference explicitly uses them (uppercase tile labels, middle-dot meta strings, subtle convex key gradients), follow it. Otherwise no filler text, no decorative gradients and no em dashes in UI strings.
+- **Stack:** Vite 8, React 19, TypeScript strict, Zod 4, Dexie 4, Zustand, react-markdown + remark-gfm + remark-math + rehype-katex (KaTeX pinned to rehype-katex's 0.16 line), Shiki (JS regex engine, bundled languages, Catppuccin themes), fflate, Motion, i18next, lucide-react, Fontsource (Geist, Geist Mono, Bricolage Grotesque), CSS Modules. Lint: oxlint + Prettier.
+- **Highlighted languages:** python, java, c, cpp, csharp, javascript, typescript, sql, bash, haskell, prolog, rust, go, kotlin, json, yaml, html, xml, css, latex, asm.

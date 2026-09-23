@@ -1,9 +1,11 @@
 import { AnimatePresence, motion, MotionConfig } from 'motion/react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { findCourse, useStore } from './state/store'
 import styles from './App.module.css'
-import { Dashboard } from './views/Dashboard'
+import { AppHeader, type Section } from './views/AppHeader'
+import { Courses } from './views/courses/Courses'
+import { Overview } from './views/overview/Overview'
 import { PracticeSession } from './views/PracticeSession'
 import { PracticeSetup } from './views/PracticeSetup'
 
@@ -21,31 +23,42 @@ export function App() {
 
   if (!ready) return null
 
-  // A view whose course disappeared (removed or broken after an update) falls back to the dashboard.
-  const course = view.name === 'dashboard' ? undefined : findCourse(courses, view.courseId)
-  const page =
-    view.name === 'setup' && course ? (
-      <PracticeSetup course={course} />
-    ) : view.name === 'session' && course ? (
-      <PracticeSession key={view.sessionId} course={course} questionIds={view.questionIds} />
-    ) : (
-      <Dashboard />
-    )
-  const pageKey = course ? `${view.name}:${view.name === 'session' ? view.sessionId : ''}` : 'dashboard'
+  // A setup view whose course disappeared (removed, or broken after an update) falls back to the overview.
+  const setupCourse = view.name === 'setup' ? findCourse(courses, view.courseId) : undefined
+  let page: ReactNode
+  let section: Section | undefined
+  let pageKey: string = view.name
+  if (view.name === 'session') {
+    page = <PracticeSession key={view.sessionId} items={view.items} courseId={view.courseId} />
+    pageKey = view.sessionId
+  } else if (setupCourse) {
+    page = <PracticeSetup course={setupCourse} />
+    section = 'courses'
+  } else if (view.name === 'courses') {
+    page = <Courses />
+    section = 'courses'
+  } else {
+    page = <Overview />
+    section = 'overview'
+    pageKey = 'overview'
+  }
 
   return (
     <MotionConfig reducedMotion="user">
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={pageKey}
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.14 }}
-        >
-          {page}
-        </motion.div>
-      </AnimatePresence>
+      <div className={styles.app}>
+        {section && <AppHeader section={section} />}
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.main
+            key={pageKey}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.12 }}
+          >
+            {page}
+          </motion.main>
+        </AnimatePresence>
+      </div>
       <DropOverlay visible={dragging} />
       <Notices />
     </MotionConfig>
@@ -109,7 +122,7 @@ function DropOverlay({ visible }: { visible: boolean }) {
           transition={{ duration: 0.12 }}
         >
           <motion.div className={styles.dropWell} initial={{ scale: 0.96 }} animate={{ scale: 1 }}>
-            {t('drop.overlay')}
+            {t('addCourse.drop')}
           </motion.div>
         </motion.div>
       )}

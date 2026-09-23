@@ -1,0 +1,149 @@
+/*
+ * Design tokens. Dark is the default; light overrides the same names with its own tuned values.
+ * Dark values come from design/dashboard-reference.dc.html.
+ *
+ * Depth grammar (SPEC, Design): everything sits on one base colour.
+ *   raised  = panels (tiles, popover)
+ *   sunk    = read-only displays and tracks (badges, chips, wells, bar tracks, drop zone)
+ *   key     = everything clickable: convex, lifts on hover, sinks when pressed
+ */
+:root {
+  color-scheme: dark;
+
+  --base: #1d2027;
+  --text: #e8e9ee;
+  --text-muted: #a3a8b5;
+  --text-soft: #c4c8d2;
+  --logo: #d9dbe2;
+  --divider: #272b34;
+  --empty: #252932;
+
+  --accent: #b9a8ff;
+  --accent-hover: #d3c8ff;
+  --accent-face: linear-gradient(145deg, #cbbcff, #a490f2);
+  --accent-down: #a490f2;
+  --accent-edge: rgba(255, 255, 255, 0.22);
+  --accent-ink: #1a1530;
+
+  /* Course colours (bank field course.color) */
+  --peach: #f2a58e;
+  --mint: #86d6a8;
+  --sky: #8ec9ff;
+  --lavender: #b9a8ff;
+  --lemon: #f3c27a;
+  --rose: #f0a0c8;
+
+  /* Meaning */
+  --new: var(--mint);
+  --weak: var(--peach);
+  --soon: var(--lemon);
+  --good: var(--mint);
+  --bad: var(--peach);
+
+  /* Depth */
+  --raised:
+    9px 9px 20px rgba(0, 0, 0, 0.55), -7px -7px 16px rgba(255, 255, 255, 0.035),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  --float: 12px 12px 28px rgba(0, 0, 0, 0.6), -6px -6px 16px rgba(255, 255, 255, 0.035);
+  --float-edge: rgba(255, 255, 255, 0.04);
+  --sunk: inset 4px 4px 9px rgba(0, 0, 0, 0.5), inset -3px -3px 7px rgba(255, 255, 255, 0.03);
+  --sunk-sm: inset 3px 3px 6px rgba(0, 0, 0, 0.45), inset -2px -2px 5px rgba(255, 255, 255, 0.03);
+  --sunk-xs: inset 2px 2px 4px rgba(0, 0, 0, 0.55), inset -1px -1px 3px rgba(255, 255, 255, 0.04);
+  --sunk-lg: inset 6px 6px 14px rgba(0, 0, 0, 0.5), inset -5px -5px 12px rgba(255, 255, 255, 0.03);
+  --sunk-lg-hover: inset 8px 8px 16px rgba(0, 0, 0, 0.55), inset -6px -6px 13px rgba(255, 255, 255, 0.035);
+
+  --key-face: linear-gradient(145deg, #23262e, #1a1d23);
+  --key-edge: rgba(255, 255, 255, 0.045);
+  --key-sm: 4px 4px 9px rgba(0, 0, 0, 0.5), -3px -3px 7px rgba(255, 255, 255, 0.04);
+  --key-md: 5px 5px 11px rgba(0, 0, 0, 0.5), -4px -4px 9px rgba(255, 255, 255, 0.035);
+  --key-lg: 6px 6px 13px rgba(0, 0, 0, 0.5), -4px -4px 10px rgba(255, 255, 255, 0.035);
+  --key-down: inset 4px 4px 8px rgba(0, 0, 0, 0.55), inset -3px -3px 6px rgba(255, 255, 255, 0.035);
+  --accent-key:
+    7px 7px 16px rgba(0, 0, 0, 0.55), -4px -4px 10px rgba(255, 255, 255, 0.04),
+    inset 0 2px 0 rgba(255, 255, 255, 0.35), inset 0 -3px 0 rgba(0, 0, 0, 0.15);
+  --accent-key-down: inset 3px 3px 7px rgba(50, 30, 120, 0.5), inset -2px -2px 5px rgba(255, 255, 255, 0.28);
+  --logo-emboss: 0 -1px 0 rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  /* Shape */
+  --r-panel: 22px;
+  --r-float: 18px;
+  --r-well: 14px;
+  --r-key: 10px;
+  --r-key-md: 12px;
+  --r-key-lg: 13px;
+  --r-chip: 9px;
+
+  /* Type */
+  --font-ui: 'Geist Variable', system-ui, sans-serif;
+  --font-display: 'Bricolage Grotesque Variable', var(--font-ui);
+  --font-mono: 'Geist Mono Variable', ui-monospace, monospace;
+
+  /* Motion */
+  --press: 0.18s ease;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --base: #e4e7ee;
+  --text: #1c2029;
+  --text-muted: #555b69;
+  --text-soft: #383d49;
+  --logo: #2a2e38;
+  --divider: #d0d4dd;
+  --empty: #d3d7df;
+
+  --accent: #5f4bcf;
+  --accent-hover: #4b38b8;
+  --accent-edge: rgba(255, 255, 255, 0.5);
+
+  --peach: #a0412a;
+  --mint: #1b6a44;
+  --sky: #1f5f9e;
+  --lavender: #5f4bcf;
+  --lemon: #855700;
+  --rose: #a3366c;
+
+  --raised:
+    9px 9px 20px rgba(142, 150, 175, 0.55), -7px -7px 16px rgba(255, 255, 255, 0.85),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  --float: 12px 12px 28px rgba(142, 150, 175, 0.6), -6px -6px 16px rgba(255, 255, 255, 0.85);
+  --float-edge: rgba(255, 255, 255, 0.7);
+  --sunk: inset 4px 4px 9px rgba(142, 150, 175, 0.55), inset -3px -3px 7px rgba(255, 255, 255, 0.85);
+  --sunk-sm: inset 3px 3px 6px rgba(142, 150, 175, 0.5), inset -2px -2px 5px rgba(255, 255, 255, 0.85);
+  --sunk-xs: inset 2px 2px 4px rgba(142, 150, 175, 0.6), inset -1px -1px 3px rgba(255, 255, 255, 0.9);
+  --sunk-lg: inset 6px 6px 14px rgba(142, 150, 175, 0.55), inset -5px -5px 12px rgba(255, 255, 255, 0.85);
+  --sunk-lg-hover:
+    inset 8px 8px 16px rgba(142, 150, 175, 0.62), inset -6px -6px 13px rgba(255, 255, 255, 0.9);
+
+  --key-face: linear-gradient(145deg, #eef0f5, #d9dde5);
+  --key-edge: rgba(255, 255, 255, 0.7);
+  --key-sm: 4px 4px 9px rgba(142, 150, 175, 0.55), -3px -3px 7px rgba(255, 255, 255, 0.9);
+  --key-md: 5px 5px 11px rgba(142, 150, 175, 0.55), -4px -4px 9px rgba(255, 255, 255, 0.9);
+  --key-lg: 6px 6px 13px rgba(142, 150, 175, 0.55), -4px -4px 10px rgba(255, 255, 255, 0.9);
+  --key-down: inset 4px 4px 8px rgba(142, 150, 175, 0.6), inset -3px -3px 6px rgba(255, 255, 255, 0.9);
+  --accent-key:
+    7px 7px 16px rgba(142, 150, 175, 0.6), -4px -4px 10px rgba(255, 255, 255, 0.9),
+    inset 0 2px 0 rgba(255, 255, 255, 0.35), inset 0 -3px 0 rgba(0, 0, 0, 0.12);
+  --logo-emboss: 0 1px 0 rgba(255, 255, 255, 0.8), 0 -1px 0 rgba(0, 0, 0, 0.08);
+}
+
+/* A course colour becomes --course inside any element with data-color. */
+[data-color='peach'] {
+  --course: var(--peach);
+}
+[data-color='mint'] {
+  --course: var(--mint);
+}
+[data-color='sky'] {
+  --course: var(--sky);
+}
+[data-color='lavender'] {
+  --course: var(--lavender);
+}
+[data-color='lemon'] {
+  --course: var(--lemon);
+}
+[data-color='rose'] {
+  --course: var(--rose);
+}

@@ -1,75 +1,68 @@
-import { ArrowLeft, Check } from 'lucide-react'
+import { Play } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { courseColor, QUESTION_TYPES, type QuestionType } from '../bank/schema'
 import { selectQuestions } from '../practice/select'
 import { useStore, type Course } from '../state/store'
+import { CodeBadge, Key, Panel, Segmented } from '../ui/primitives'
 import { useHotkeys } from '../ui/useHotkeys'
 import styles from './PracticeSetup.module.css'
 
-const LIMITS = [10, 20, 50]
+const LIMITS = ['10', '20', '50']
 
 export function PracticeSetup({ course }: { course: Course }) {
   const { t } = useTranslation()
   const go = useStore((s) => s.go)
-  const removeCourse = useStore((s) => s.removeCourse)
+  const startSession = useStore((s) => s.startSession)
   const { course: meta, topics, questions } = course.bank
   const typesInBank = QUESTION_TYPES.filter((type) => questions.some((q) => q.type === type))
 
   const [selectedTopics, setSelectedTopics] = useState<string[]>(topics)
   const [selectedTypes, setSelectedTypes] = useState<QuestionType[]>(typesInBank)
-  const [limit, setLimit] = useState<number | undefined>(undefined)
-  const [confirmRemove, setConfirmRemove] = useState(false)
+  const [limit, setLimit] = useState('all')
 
   const filter = { topics: selectedTopics, types: selectedTypes }
   const matching = selectQuestions(questions, filter).length
-  const sessionSize = Math.min(limit ?? matching, matching)
+  const sessionSize = limit === 'all' ? matching : Math.min(Number(limit), matching)
+  const limits = [...LIMITS.filter((n) => Number(n) < matching), 'all']
 
   const start = () => {
     if (!sessionSize) return
-    const picked = selectQuestions(questions, { ...filter, limit })
-    go({
-      name: 'session',
-      courseId: meta.id,
-      questionIds: picked.map((q) => q.id),
-      sessionId: crypto.randomUUID(),
-    })
+    const picked = selectQuestions(questions, { ...filter, limit: sessionSize })
+    startSession(
+      picked.map((q) => ({ courseId: meta.id, questionId: q.id })),
+      meta.id,
+    )
   }
-  const back = () => go({ name: 'dashboard' })
-  useHotkeys({ Enter: start, Escape: back })
+  useHotkeys({ Enter: start, Escape: () => go({ name: 'overview' }) })
 
   return (
-    <div className={styles.page} data-color={courseColor(meta)}>
-      <button type="button" className="btn btn-ghost" onClick={back}>
-        <ArrowLeft aria-hidden /> {t('setup.back')}
-      </button>
-
-      <h1 className={styles.title}>
-        {meta.emoji && <span aria-hidden>{meta.emoji} </span>}
-        {meta.name}
-      </h1>
+    <Panel className={styles.panel} data-color={courseColor(meta)}>
+      <div className={styles.head}>
+        <CodeBadge code={meta.code} />
+        <div>
+          <h1>{meta.name}</h1>
+          <p>{t('course.meta', { count: questions.length })}</p>
+        </div>
+      </div>
 
       <section className={styles.group}>
         <div className={styles.groupHead}>
           <h2>{t('setup.topics')}</h2>
-          <button
-            type="button"
-            className="btn btn-ghost"
-            onClick={() => setSelectedTopics(selectedTopics.length === topics.length ? [] : topics)}
-          >
+          <Key onClick={() => setSelectedTopics(selectedTopics.length === topics.length ? [] : topics)}>
             {selectedTopics.length === topics.length ? t('setup.clear') : t('setup.selectAll')}
-          </button>
+          </Key>
         </div>
-        <div className={styles.chips}>
+        <div className={styles.toggles}>
           {topics.map((topic) => (
-            <Chip
+            <Toggle
               key={topic}
               on={selectedTopics.includes(topic)}
               onToggle={() => setSelectedTopics(toggle(selectedTopics, topic))}
               count={questions.filter((q) => q.topic === topic).length}
             >
               {topic}
-            </Chip>
+            </Toggle>
           ))}
         </div>
       </section>
@@ -77,16 +70,16 @@ export function PracticeSetup({ course }: { course: Course }) {
       {typesInBank.length > 1 && (
         <section className={styles.group}>
           <h2>{t('setup.types')}</h2>
-          <div className={styles.chips}>
+          <div className={styles.toggles}>
             {typesInBank.map((type) => (
-              <Chip
+              <Toggle
                 key={type}
                 on={selectedTypes.includes(type)}
                 onToggle={() => setSelectedTypes(toggle(selectedTypes, type))}
                 count={questions.filter((q) => q.type === type).length}
               >
                 {t(`types.${type}`)}
-              </Chip>
+              </Toggle>
             ))}
           </div>
         </section>
@@ -94,62 +87,42 @@ export function PracticeSetup({ course }: { course: Course }) {
 
       <section className={styles.group}>
         <h2>{t('setup.count')}</h2>
-        <div className={styles.chips} role="radiogroup" aria-label={t('setup.count')}>
-          {[...LIMITS.filter((n) => n < matching), undefined].map((n) => (
-            <button
-              key={n ?? 'all'}
-              type="button"
-              role="radio"
-              aria-checked={limit === n}
-              className="chip"
-              onClick={() => setLimit(n)}
-            >
-              {n ?? t('setup.all')}
-            </button>
-          ))}
-        </div>
+        <Segmented
+          className={styles.limits}
+          label={t('setup.count')}
+          value={limits.includes(limit) ? limit : 'all'}
+          options={limits.map((n) => ({ value: n, label: n === 'all' ? t('setup.all') : n }))}
+          onChange={setLimit}
+        />
       </section>
 
       <div className={styles.footer}>
         {sessionSize ? (
-          <button type="button" className="btn btn-primary" onClick={start}>
-            {t('setup.start', { count: sessionSize })} <kbd>{t('keys.enter')}</kbd>
-          </button>
+          <Key variant="accent" size="lg" onClick={start}>
+            <Play fill="currentColor" strokeWidth={0} aria-hidden />
+            {t('setup.start', { count: sessionSize })}
+            <kbd>{t('keys.enter')}</kbd>
+          </Key>
         ) : (
           <p className={styles.noMatch}>{t('setup.noMatch')}</p>
         )}
       </div>
-
-      {course.removable && (
-        <div className={styles.danger}>
-          {confirmRemove ? (
-            <>
-              <span>{t('setup.removeConfirm')}</span>
-              <button type="button" className="btn" onClick={() => void removeCourse(meta.id)}>
-                {t('setup.removeYes')}
-              </button>
-              <button type="button" className="btn btn-ghost" onClick={() => setConfirmRemove(false)}>
-                {t('setup.cancel')}
-              </button>
-            </>
-          ) : (
-            <button type="button" className="btn btn-ghost" onClick={() => setConfirmRemove(true)}>
-              {t('setup.remove')}
-            </button>
-          )}
-        </div>
-      )}
-    </div>
+    </Panel>
   )
 }
 
-function Chip(props: { on: boolean; onToggle: () => void; count: number; children: ReactNode }) {
+/** A key that stays pressed while it is on. */
+function Toggle(props: { on: boolean; onToggle: () => void; count: number; children: ReactNode }) {
   return (
-    <button type="button" className="chip" aria-pressed={props.on} onClick={props.onToggle}>
-      {props.on && <Check aria-hidden size={16} strokeWidth={3} />}
+    <Key
+      down={props.on}
+      aria-pressed={props.on}
+      tone={props.on ? 'course' : undefined}
+      onClick={props.onToggle}
+    >
       {props.children}
-      <span className="count">{props.count}</span>
-    </button>
+      <span className={`mono ${styles.count}`}>{props.count}</span>
+    </Key>
   )
 }
 

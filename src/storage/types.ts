@@ -16,6 +16,14 @@ export type Attempt = {
   updatedAt: string
 }
 
+/** Per-course settings the learner chooses; not part of the question bank. */
+export type CourseSettings = {
+  courseId: string
+  /** Local calendar date "YYYY-MM-DD". */
+  examDate?: string
+  updatedAt: string
+}
+
 export type Language = 'en' | 'de'
 export type Theme = 'system' | 'light' | 'dark'
 export type Settings = { language: Language; theme: Theme; updatedAt: string }
@@ -46,6 +54,8 @@ export interface Storage {
   deleteBankFile(name: string): Promise<void>
   listAttempts(): Promise<Attempt[]>
   addAttempt(attempt: Unstamped<Attempt>): Promise<Attempt>
+  listCourseSettings(): Promise<CourseSettings[]>
+  saveCourseSettings(settings: Unstamped<CourseSettings>): Promise<CourseSettings>
   loadSettings(): Promise<Settings>
   saveSettings(settings: Unstamped<Settings>): Promise<Settings>
 }

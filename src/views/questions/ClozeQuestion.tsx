@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { isBlankCorrect, type Grade } from '../../practice/grade'
 import { Markdown } from '../../ui/Markdown'
 import { BlankContext } from '../../ui/markdownContext'
+import { Key } from '../../ui/primitives'
 import { useHotkeys } from '../../ui/useHotkeys'
 import styles from './questions.module.css'
 import { ActionBar, Feedback, type QuestionProps } from './shared'
@@ -66,9 +67,9 @@ export function ClozeQuestion({ question, onSubmit, onNext }: QuestionProps<'clo
       {grade && <Feedback grade={grade} question={question} />}
 
       <ActionBar>
-        <button type="submit" className="btn btn-primary">
+        <Key type="submit" variant="accent" size="md">
           {grade ? t('session.continue') : t('session.check')} <kbd>{t('keys.enter')}</kbd>
-        </button>
+        </Key>
       </ActionBar>
     </form>
   )
