@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>lia Dashboard Neumorph verfeinert</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:'Geist',system-ui,sans-serif;background:#1d2027;color:#e8e9ee}
+a{color:#b9a8ff}a:hover{color:#d3c8ff}
+button{font-family:inherit;cursor:pointer}
+.key{background:linear-gradient(145deg,#23262e,#1a1d23)!important;border:1px solid rgba(255,255,255,.045)!important;transition:box-shadow .18s ease,transform .18s ease}
+.key:hover{transform:translateY(-1px)}
+.key:active{transform:translateY(1px);background:#1d2027!important;box-shadow:inset 4px 4px 8px rgba(0,0,0,.55),inset -3px -3px 6px rgba(255,255,255,.035)!important}
+.key:focus-visible{outline:2px solid #b9a8ff;outline-offset:3px}
+.key-accent{background:linear-gradient(145deg,#cbbcff,#a490f2)!important;border:1px solid rgba(255,255,255,.22)!important}
+.key-accent:active{background:#a490f2!important;box-shadow:inset 3px 3px 7px rgba(50,30,120,.5),inset -2px -2px 5px rgba(255,255,255,.28)!important}
+.drop{cursor:pointer;transition:box-shadow .18s}.drop:hover{box-shadow:inset 8px 8px 16px rgba(0,0,0,.55),inset -6px -6px 13px rgba(255,255,255,.035)!important}.drop:focus-visible{outline:2px solid #b9a8ff;outline-offset:3px}
+.plus{transition:box-shadow .18s ease,transform .18s ease,background .18s}.drop:hover .plus{transform:translateY(-1px)}.drop:active .plus{transform:translateY(1px);background:#1d2027!important;box-shadow:inset 4px 4px 8px rgba(0,0,0,.55),inset -3px -3px 6px rgba(255,255,255,.035)!important}
+.tab{transition:color .15s}.tab:hover{color:#e8e9ee!important}
+</style>
+</helmet>
+<div style="width: 1440px; height: 900px; box-sizing: border-box; padding: 28px 40px 40px; background: #1d2027; display: flex; flex-direction: column; gap: 24px; font-family: 'Geist', system-ui, sans-serif; color: #e8e9ee;">
+
+  <header style="display: flex; align-items: center; justify-content: space-between; height: 48px;">
+    <div style="display: flex; align-items: center; gap: 40px;">
+      <div style="padding: 6px 16px 8px; border-radius: 14px; background: #1d2027; box-shadow: inset 4px 4px 9px rgba(0,0,0,0.5), inset -3px -3px 7px rgba(255,255,255,0.03); font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 26px; line-height: 1; letter-spacing: -0.5px; color: #d9dbe2; text-shadow: 0 -1px 0 rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05);">lia</div>
+      <nav aria-label="Hauptnavigation" style="display: flex; gap: 4px; padding: 4px; background: #1d2027; border-radius: 14px; box-shadow: inset 4px 4px 9px rgba(0,0,0,0.5), inset -3px -3px 7px rgba(255,255,255,0.03);">
+        <sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+          <button class="{{t.cls}}" onClick="{{t.pick}}" style="height: 34px; padding: 0 14px; border: none; border-radius: 10px; background: transparent; color: {{t.fg}}; font-size: 14px; font-weight: 500; box-shadow: {{t.sh}};">{{t.label}}</button>
+        </sc-for>
+      </nav>
+    </div>
+    <div style="position: relative;">
+      <button class="{{gearCls}}" onClick="{{toggleMenu}}" aria-label="Einstellungen" aria-expanded="{{menuOpen}}" style="width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; border: none; border-radius: 12px; background: #1d2027; color: {{accent}}; box-shadow: {{gearSh}};">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"></path></svg>
+      </button>
+      <sc-if value="{{menuOpen}}" hint-placeholder-val="{{ true }}">
+        <div role="dialog" aria-label="Einstellungen" style="position: absolute; top: 56px; right: 0; z-index: 10; width: 280px; padding: 16px; box-sizing: border-box; border-radius: 18px; background: #1d2027; border: 1px solid rgba(255,255,255,0.04); box-shadow: 12px 12px 28px rgba(0,0,0,0.6), -6px -6px 16px rgba(255,255,255,0.035); display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-size: 13px; color: #a3a8b5;">Aussehen</span>
+            <div style="display: flex; gap: 3px; padding: 4px; border-radius: 13px; background: #1d2027; box-shadow: inset 3px 3px 7px rgba(0,0,0,0.5), inset -2px -2px 5px rgba(255,255,255,0.03);">
+              <sc-for list="{{themes}}" as="m" hint-placeholder-count="3">
+                <button class="{{m.cls}}" onClick="{{m.pick}}" style="flex: 1 1 0; height: 32px; display: flex; align-items: center; justify-content: center; gap: 6px; border: none; border-radius: 9px; background: transparent; color: {{m.fg}}; font-size: 12px; font-weight: 600; box-shadow: {{m.sh}};">
+                  <sc-if value="{{m.isSystem}}" hint-placeholder-val="{{ false }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"></rect><path d="M8 20h8M12 16v4"></path></svg></sc-if>
+                  <sc-if value="{{m.isLight}}" hint-placeholder-val="{{ false }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg></sc-if>
+                  <sc-if value="{{m.isDark}}" hint-placeholder-val="{{ true }}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg></sc-if>
+                  {{m.label}}
+                </button>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-size: 13px; color: #a3a8b5;">Sprache</span>
+            <button class="key" onClick="{{toggleLang}}" style="height: 34px; min-width: 96px; padding: 0 12px; border: none; border-radius: 10px; background: #1d2027; color: #e8e9ee; font-size: 13px; font-weight: 600; box-shadow: 4px 4px 9px rgba(0,0,0,0.5), -3px -3px 7px rgba(255,255,255,0.04);">{{langLabel}}</button>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+  </header>
+
+  <div style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; flex-grow: 1;">
+
+    <section style="grid-column: span 7; border-radius: 22px; padding: 24px 28px; display: flex; gap: 32px; background: #1d2027; box-shadow: 9px 9px 20px rgba(0,0,0,0.55), -7px -7px 16px rgba(255,255,255,0.035), inset 0 1px 0 rgba(255,255,255,0.03);">
+      <div style="display: flex; flex-direction: column; gap: 14px; flex-grow: 1;">
+        <div style="font-size: 13px; font-weight: 500; color: #a3a8b5; text-transform: uppercase; letter-spacing: 0.8px;">Heute dran</div>
+        <div style="display: flex; align-items: baseline; gap: 12px;">
+          <div style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 64px; line-height: 1; letter-spacing: -2px;">32</div>
+          <div style="font-size: 15px; color: #a3a8b5;">Fragen · ca. 25 min</div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <span style="display: flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 9px; background: #1d2027; font-size: 13px; box-shadow: inset 3px 3px 6px rgba(0,0,0,0.45), inset -2px -2px 5px rgba(255,255,255,0.03);"><span style="width: 8px; height: 8px; border-radius: 4px; background: {{accent}};"></span>18 fällig</span>
+          <span style="display: flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 9px; background: #1d2027; font-size: 13px; box-shadow: inset 3px 3px 6px rgba(0,0,0,0.45), inset -2px -2px 5px rgba(255,255,255,0.03);"><span style="width: 8px; height: 8px; border-radius: 4px; background: #86d6a8;"></span>9 neu</span>
+          <span style="display: flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 9px; background: #1d2027; font-size: 13px; box-shadow: inset 3px 3px 6px rgba(0,0,0,0.45), inset -2px -2px 5px rgba(255,255,255,0.03);"><span style="width: 8px; height: 8px; border-radius: 4px; background: #f2a58e;"></span>5 Schwachstellen</span>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 6px;">
+          <button class="key key-accent" style="height: 46px; padding: 0 20px; display: flex; align-items: center; gap: 10px; border: none; border-radius: 13px; background: {{accent}}; color: #1a1530; font-size: 15px; font-weight: 600; box-shadow: 7px 7px 16px rgba(0,0,0,0.55), -4px -4px 10px rgba(255,255,255,0.04), inset 0 2px 0 rgba(255,255,255,0.35), inset 0 -3px 0 rgba(0,0,0,0.15);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"></path></svg>
+            Session starten
+          </button>
+          <button class="key" style="height: 46px; padding: 0 18px; display: flex; align-items: center; gap: 8px; border: none; border-radius: 13px; background: #1d2027; color: #e8e9ee; font-size: 15px; font-weight: 500; box-shadow: 6px 6px 13px rgba(0,0,0,0.5), -4px -4px 10px rgba(255,255,255,0.035);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v4l2.5 2.5M9 2h6"></path></svg>
+            Prüfung simulieren
+          </button>
+        </div>
+      </div>
+      <div style="width: 230px; display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; justify-content: space-between; font-size: 13px; color: #a3a8b5;"><span>Diese Woche</span><span style="font-family: 'Geist Mono', monospace; color: #e8e9ee;">63 Fragen</span></div>
+        <div style="display: flex; align-items: flex-end; gap: 10px; height: 110px; padding: 12px 14px; border-radius: 14px; background: #1d2027; box-shadow: inset 5px 5px 11px rgba(0,0,0,0.5), inset -4px -4px 9px rgba(255,255,255,0.03);">
+          <sc-for list="{{week}}" as="d" hint-placeholder-count="7">
+            <div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+              <div style="width: 100%; height: {{d.h}}; border-radius: 5px; background: {{d.bg}};"></div>
+              <div style="font-size: 11px; color: {{d.fg}};">{{d.l}}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </section>
+
+    <section style="grid-column: span 2; border-radius: 22px; padding: 22px; display: flex; flex-direction: column; justify-content: space-between; background: #1d2027; box-shadow: 9px 9px 20px rgba(0,0,0,0.55), -7px -7px 16px rgba(255,255,255,0.035), inset 0 1px 0 rgba(255,255,255,0.03);">
+      <div style="width: 40px; height: 40px; border-radius: 12px; background: #1d2027; box-shadow: inset 3px 3px 7px rgba(0,0,0,0.5), inset -2px -2px 5px rgba(255,255,255,0.035); display: flex; align-items: center; justify-content: center; color: #f2a58e;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 4 5 6 5 11a5 5 0 0 1-10 0c0-2 1-3.5 2-4.5.5 2 1.5 3 2.5 3C11 8 12 5 12 2z"></path></svg>
+      </div>
+      <div>
+        <div style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 40px; line-height: 1;">12</div>
+        <div style="font-size: 13px; color: #a3a8b5; margin-top: 4px;">Tage am Stück</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: #a3a8b5;"><span>Level 7</span><span style="font-family: 'Geist Mono', monospace;">1240 / 1500</span></div>
+        <div style="height: 8px; border-radius: 4px; background: #1d2027; box-shadow: inset 2px 2px 4px rgba(0,0,0,0.55), inset -1px -1px 3px rgba(255,255,255,0.04);"><div style="width: 83%; height: 100%; border-radius: 4px; background: #f2a58e;"></div></div>
+      </div>
+    </section>
+
+    <section style="grid-column: span 3; border-radius: 22px; padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; background: #1d2027; box-shadow: 9px 9px 20px rgba(0,0,0,0.55), -7px -7px 16px rgba(255,255,255,0.035), inset 0 1px 0 rgba(255,255,255,0.03);">
+      <div style="font-size: 13px; font-weight: 500; color: #a3a8b5; text-transform: uppercase; letter-spacing: 0.8px;">Nächste Klausur</div>
+      <div>
+        <div style="font-size: 16px; font-weight: 600;">Embedded Software</div>
+        <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 6px;">
+          <div style="font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 40px; line-height: 1;">23</div>
+          <div style="font-size: 14px; color: #a3a8b5;">Tage · Fr, 16. Okt.</div>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: #a3a8b5;"><span>Vorbereitet</span><span style="font-family: 'Geist Mono', monospace; color: #e8e9ee;">64 %</span></div>
+        <div style="height: 8px; border-radius: 4px; background: #1d2027; box-shadow: inset 2px 2px 4px rgba(0,0,0,0.55), inset -1px -1px 3px rgba(255,255,255,0.04);"><div style="width: 64%; height: 100%; border-radius: 4px; background: #86d6a8;"></div></div>
+      </div>
+      <div style="display: flex; justify-content: space-between; padding-top: 12px; border-top: 1px solid #272b34; font-size: 13px; color: #a3a8b5;"><span>Danach: IT-Sicherheit</span><span style="font-family: 'Geist Mono', monospace;">31 T</span></div>
+    </section>
+
+    <div style="grid-column: span 8; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;">
+      <sc-for list="{{courses}}" as="c" hint-placeholder-count="3">
+        <article style="border-radius: 22px; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; background: #1d2027; box-shadow: 9px 9px 20px rgba(0,0,0,0.55), -7px -7px 16px rgba(255,255,255,0.035), inset 0 1px 0 rgba(255,255,255,0.03);">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px; background: #1d2027; color: {{c.color}}; box-shadow: inset 3px 3px 7px rgba(0,0,0,0.5), inset -2px -2px 5px rgba(255,255,255,0.035); display: flex; align-items: center; justify-content: center; font-family: 'Geist Mono', monospace; font-size: 13px; font-weight: 500;">{{c.code}}</div>
+            <div style="flex-grow: 1; min-width: 0;">
+              <div style="font-size: 15px; font-weight: 600;">{{c.name}}</div>
+              <div style="font-size: 12px; color: #a3a8b5; margin-top: 2px;">{{c.meta}}</div>
+            </div>
+            <div style="padding: 4px 9px; border-radius: 8px; background: #1d2027; box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5), inset -2px -2px 4px rgba(255,255,255,0.03); font-family: 'Geist Mono', monospace; font-size: 12px; color: {{c.examFg}};">{{c.exam}}</div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 9px;">
+            <sc-for list="{{c.topics}}" as="t" hint-placeholder-count="3">
+              <div style="display: flex; align-items: center; gap: 10px; font-size: 12px;">
+                <div style="width: 130px; color: #c4c8d2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{t.n}}</div>
+                <div style="flex-grow: 1; height: 6px; border-radius: 3px; background: #1d2027; box-shadow: inset 2px 2px 4px rgba(0,0,0,0.55), inset -1px -1px 3px rgba(255,255,255,0.04);"><div style="width: {{t.w}}; height: 100%; border-radius: 3px; background: {{c.color}};"></div></div>
+                <div style="width: 34px; text-align: right; font-family: 'Geist Mono', monospace; color: #a3a8b5;">{{t.w}}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 2px;">
+            <div style="font-size: 12px; color: #a3a8b5;">{{c.due}}</div>
+            <button class="key" style="height: 34px; padding: 0 14px; border: none; border-radius: 10px; background: #1d2027; color: {{c.color}}; font-size: 13px; font-weight: 600; box-shadow: 4px 4px 9px rgba(0,0,0,0.5), -3px -3px 7px rgba(255,255,255,0.035);">Üben</button>
+          </div>
+        </article>
+      </sc-for>
+      <button class="drop" style="border: none; border-radius: 22px; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: #1d2027; box-shadow: inset 6px 6px 14px rgba(0,0,0,0.5), inset -5px -5px 12px rgba(255,255,255,0.03); color: #a3a8b5; font-family: inherit;">
+        <span class="plus" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 14px; color: {{accent}}; background: linear-gradient(145deg,#23262e,#1a1d23); border: 1px solid rgba(255,255,255,0.045); box-shadow: 5px 5px 11px rgba(0,0,0,0.5), -4px -4px 9px rgba(255,255,255,0.04);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+        </span>
+        <span style="font-size: 14px; font-weight: 600; color: #e8e9ee;">Kurs hinzufügen</span>
+        <span style="font-size: 12px; color: #a3a8b5;">.json oder .zip hierher ziehen oder klicken</span>
+      </button>
+    </div>
+
+    <div style="grid-column: span 4; display: flex; flex-direction: column; gap: 16px;">
+      <section style="border-radius: 22px; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px; background: #1d2027; box-shadow: 9px 9px 20px rgba(0,0,0,0.55), -7px -7px 16px rgba(255,255,255,0.035), inset 0 1px 0 rgba(255,255,255,0.03);">
+        <div style="display: flex; justify-content: space-between; align-items: baseline;">
+          <div style="font-size: 15px; font-weight: 600;">Aktivität</div>
+          <div style="font-size: 12px; color: #a3a8b5;">letzte 20 Wochen</div>
+        </div>
+        <div style="padding: 14px; border-radius: 16px; background: #1d2027; box-shadow: inset 4px 4px 9px rgba(0,0,0,0.5), inset -3px -3px 7px rgba(255,255,255,0.03);"><div style="display: grid; grid-template-rows: repeat(7, 12px); grid-auto-flow: column; grid-auto-columns: 12px; gap: 4px; justify-content: space-between;">
+          <sc-for list="{{heat}}" as="h" hint-placeholder-count="140">
+            <div style="border-radius: 3px; background: {{h.bg}};"></div>
+          </sc-for>
+        </div></div>
+        <div style="display: flex; justify-content: space-between; font-size: 12px; color: #a3a8b5;"><span style="font-family: 'Geist Mono', monospace;">1.284 Antworten · 81 % richtig</span></div>
+      </section>
+
+      <section style="flex-grow: 1; border-radius: 22px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; background: #1d2027; box-shadow: 9px 9px 20px rgba(0,0,0,0.55), -7px -7px 16px rgba(255,255,255,0.035), inset 0 1px 0 rgba(255,255,255,0.03);">
+        <div style="font-size: 15px; font-weight: 600;">Schwächste Themen</div>
+        <sc-for list="{{weak}}" as="w" hint-placeholder-count="4">
+          <div style="display: flex; align-items: center; gap: 10px; font-size: 13px;">
+            <span style="width: 8px; height: 8px; flex-shrink: 0; border-radius: 4px; background: {{w.color}};"></span>
+            <span style="flex-grow: 1;">{{w.n}}</span>
+            <span style="font-size: 11px; color: #a3a8b5; font-family: 'Geist Mono', monospace;">{{w.c}}</span>
+            <span style="width: 40px; text-align: right; font-family: 'Geist Mono', monospace; color: #f2a58e;">{{w.p}}</span>
+          </div>
+        </sc-for>
+        <button class="key" style="margin-top: auto; height: 38px; border: none; border-radius: 11px; background: #1d2027; color: #e8e9ee; font-size: 13px; font-weight: 500; box-shadow: 5px 5px 11px rgba(0,0,0,0.5), -4px -4px 9px rgba(255,255,255,0.035);">Schwachstellen üben</button>
+      </section>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#b9a8ff&quot;,&quot;options&quot;:[&quot;#b9a8ff&quot;,&quot;#86d6a8&quot;,&quot;#8ec9ff&quot;,&quot;#f3c27a&quot;]},&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { tab: 'overview', lang: 'DE', theme: 'dark', menu: false };
+  }
+  renderVals() {
+    const RAISED = '4px 4px 9px rgba(0,0,0,0.5), -3px -3px 7px rgba(255,255,255,0.04)';
+    const tabs = [['overview', 'Übersicht'], ['courses', 'Kurse'], ['stats', 'Statistik'], ['shop', 'Shop']].map(([id, label]) => {
+      const on = this.state.tab === id;
+      return { label, cls: on ? 'key' : 'tab', fg: on ? '#e8e9ee' : '#a3a8b5', sh: on ? RAISED : 'none', pick: () => this.setState({ tab: id }) };
+    });
+    const order = ['system', 'light', 'dark'];
+    const themeNames = { system: 'System', light: 'Hell', dark: 'Dunkel' };
+    const th = this.state.theme;
+    const menuOpen = this.state.menu;
+    const PRESSED = 'inset 3px 3px 7px rgba(0,0,0,0.55), inset -2px -2px 5px rgba(255,255,255,0.035)';
+    const extra = {
+      menuOpen,
+      gearCls: menuOpen ? '' : 'key',
+      gearSh: menuOpen ? PRESSED : '5px 5px 11px rgba(0,0,0,0.5), -4px -4px 9px rgba(255,255,255,0.035)',
+      toggleMenu: () => this.setState({ menu: !this.state.menu }),
+      themes: order.map((id) => {
+        const on = th === id;
+        return { label: themeNames[id], isSystem: id === 'system', isLight: id === 'light', isDark: id === 'dark',
+          cls: on ? 'key' : 'tab', fg: on ? '#e8e9ee' : '#a3a8b5',
+          sh: on ? '4px 4px 9px rgba(0,0,0,0.5), -3px -3px 7px rgba(255,255,255,0.04)' : 'none',
+          pick: () => this.setState({ theme: id }) };
+      }),
+      langLabel: this.state.lang === 'DE' ? 'Deutsch' : 'English',
+      toggleLang: () => this.setState({ lang: this.state.lang === 'DE' ? 'EN' : 'DE' })
+    };
+    const accent = this.props.accent ?? '#b9a8ff';
+    const hex = accent.replace('#', '');
+    const r = parseInt(hex.slice(0, 2), 16), g = parseInt(hex.slice(2, 4), 16), b = parseInt(hex.slice(4, 6), 16);
+    const a = (x) => 'rgba(' + r + ',' + g + ',' + b + ',' + x + ')';
+
+    const weekVals = [24, 31, 8, 0, 0, 0, 0];
+    const labels = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+    const week = weekVals.map((v, i) => ({
+      l: labels[i],
+      h: Math.max(4, Math.round(v / 31 * 64)) + 'px',
+      bg: i === 2 ? accent : (v > 0 ? a(0.45) : '#252932'),
+      fg: i === 2 ? '#e8e9ee' : '#a3a8b5'
+    }));
+
+    const levels = ['#252932', a(0.25), a(0.45), a(0.7), accent];
+    const heat = [];
+    const todayIndex = 19 * 7 + 2;
+    for (let i = 0; i < 140; i++) {
+      if (i > todayIndex) { heat.push({ bg: 'transparent' }); continue; }
+      const day = i % 7;
+      const recent = i > 90 ? 1 : 0;
+      let lvl = ((i * 37 + day * 11 + (i >> 3) * 5) % 9);
+      lvl = lvl < 3 ? 0 : lvl < 5 ? 1 : lvl < 7 ? 2 : lvl < 8 ? 3 : 4;
+      if (day >= 5 && lvl > 1) lvl = lvl - 1;
+      if (recent && lvl < 4 && i % 3 === 0) lvl = lvl + 1;
+      heat.push({ bg: levels[lvl] });
+    }
+
+    const courses = [
+      { code: 'ES', name: 'Embedded Software', meta: '142 Fragen · 78 % richtig', exam: 'in 23 T', examFg: '#f3c27a', color: '#86d6a8', tint: 'rgba(134,214,168,0.14)', due: '12 fällig · 4 neu',
+        topics: [{ n: 'Interrupts & ISRs', w: '82%' }, { n: 'RTOS-Scheduling', w: '61%' }, { n: 'Speicherlayout', w: '44%' }] },
+      { code: 'IS', name: 'IT-Sicherheit', meta: '96 Fragen · 71 % richtig', exam: 'in 31 T', examFg: '#a3a8b5', color: '#8ec9ff', tint: 'rgba(142,201,255,0.14)', due: '6 fällig · 5 neu',
+        topics: [{ n: 'Kryptografie', w: '74%' }, { n: 'Web-Angriffe', w: '58%' }, { n: 'Zugriffskontrolle', w: '39%' }] },
+      { code: 'DB', name: 'Datenbanken & Web', meta: '118 Fragen · 86 % richtig', exam: 'in 45 T', examFg: '#a3a8b5', color: '#b9a8ff', tint: 'rgba(185,168,255,0.14)', due: '0 fällig · alles erledigt',
+        topics: [{ n: 'SQL & Joins', w: '91%' }, { n: 'Normalformen', w: '77%' }, { n: 'REST & HTTP', w: '69%' }] }
+
+    ];
+
+    const weak = [
+      { n: 'Zugriffskontrolle', c: 'IS', p: '39%', color: '#8ec9ff' },
+      { n: 'Speicherlayout', c: 'ES', p: '44%', color: '#86d6a8' },
+      { n: 'Web-Angriffe', c: 'IS', p: '58%', color: '#8ec9ff' },
+      { n: 'RTOS-Scheduling', c: 'ES', p: '61%', color: '#86d6a8' }
+    ];
+
+    return { accent, week, heat, courses, weak, tabs, ...extra };
+  }
+}
+</script>
+</body>
+</html>
