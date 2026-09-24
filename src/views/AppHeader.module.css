@@ -73,3 +73,15 @@
 .language {
   min-width: 96px;
 }
+
+.wide {
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.note {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}

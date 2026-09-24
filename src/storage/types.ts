@@ -41,12 +41,20 @@ export type BankFile = {
   removable: boolean
 }
 
+/** Desktop app only: where question banks and progress are stored. */
+export type Folders = {
+  subjects: string
+  data: string
+  /** True if the folders sit next to the app, false if lia fell back to the user's app data folder. */
+  portable: boolean
+}
+
 /** Records are written without `updatedAt`; the storage stamps it and returns the stored record. */
 export type Unstamped<T> = Omit<T, 'updatedAt'>
 
 /**
  * All persistence goes through this interface. UI code uses the app store, never this directly.
- * Implementations: dexie.ts (browser dev build), file-based storage (Tauri, M2).
+ * Implementations: dexie.ts (browser dev build) and files.ts (desktop app).
  */
 export interface Storage {
   listBankFiles(): Promise<BankFile[]>
@@ -58,4 +66,8 @@ export interface Storage {
   saveCourseSettings(settings: Unstamped<CourseSettings>): Promise<CourseSettings>
   loadSettings(): Promise<Settings>
   saveSettings(settings: Unstamped<Settings>): Promise<Settings>
+  /** Desktop app only. */
+  folders?(): Promise<Folders>
+  /** Desktop app only: shows the folder in the system file manager. */
+  openFolder?(which: 'subjects' | 'data'): Promise<void>
 }

@@ -17,6 +17,11 @@ export const de: typeof en = {
     light: 'Hell',
     dark: 'Dunkel',
     language: 'Sprache',
+    files: 'Dateien',
+    openSubjects: 'Ordner subjects öffnen',
+    openData: 'Ordner data öffnen',
+    reload: 'Kurse neu laden',
+    fallback: 'Der App-Ordner ist schreibgeschützt, deshalb liegen deine Dateien hier:',
   },
   today: {
     label: 'Heute dran',

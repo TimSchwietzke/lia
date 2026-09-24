@@ -1,4 +1,4 @@
-import { Monitor, Moon, Settings, Sun } from 'lucide-react'
+import { FolderOpen, Monitor, Moon, RotateCw, Settings, Sun } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -42,6 +42,9 @@ function SettingsMenu() {
   const { t } = useTranslation()
   const settings = useStore((s) => s.settings)
   const update = useStore((s) => s.updateSettings)
+  const folders = useStore((s) => s.folders)
+  const openFolder = useStore((s) => s.openFolder)
+  const reloadBanks = useStore((s) => s.reloadBanks)
   const [open, setOpen] = useState(false)
   const root = useRef<HTMLDivElement>(null)
   const gear = useRef<HTMLButtonElement>(null)
@@ -112,6 +115,33 @@ function SettingsMenu() {
                 onClick={() => void update({ language: settings.language === 'de' ? 'en' : 'de' })}
               >
                 {LANGUAGES[settings.language]}
+              </Key>
+            </div>
+            <div className={styles.field}>
+              <span className={styles.fieldLabel}>{t('settings.files')}</span>
+              {folders && (
+                <>
+                  <Key className={styles.wide} onClick={() => void openFolder('subjects')}>
+                    <FolderOpen aria-hidden />
+                    {t('settings.openSubjects')}
+                  </Key>
+                  <Key className={styles.wide} onClick={() => void openFolder('data')}>
+                    <FolderOpen aria-hidden />
+                    {t('settings.openData')}
+                  </Key>
+                  {!folders.portable && (
+                    <p className={styles.note}>
+                      {t('settings.fallback')}{' '}
+                      <span className="mono" title={folders.data}>
+                        {folders.data}
+                      </span>
+                    </p>
+                  )}
+                </>
+              )}
+              <Key className={styles.wide} onClick={() => void reloadBanks()}>
+                <RotateCw aria-hidden />
+                {t('settings.reload')}
               </Key>
             </div>
           </motion.div>

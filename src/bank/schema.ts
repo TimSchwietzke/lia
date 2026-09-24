@@ -1,6 +1,9 @@
 import { z } from 'zod'
 import type { Migration } from '../lib/migrate'
 
+// The desktop app's content security policy forbids eval; without this Zod would still try it once.
+z.config({ jitless: true })
+
 /**
  * The question bank format. QUESTION_FORMAT.md documents it for bank authors (and LLMs);
  * keep both in sync. A breaking change adds a migration below, which bumps the current

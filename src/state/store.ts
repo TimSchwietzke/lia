@@ -2,20 +2,23 @@ import { create } from 'zustand'
 import { loadBankFile, type LoadedBank } from '../bank/load'
 import i18n from '../i18n'
 import { shuffle } from '../practice/select'
+import { isTauri } from '@tauri-apps/api/core'
 import { dexieStorage } from '../storage/dexie'
+import { fileStorage } from '../storage/files'
 import type { QuestionRef } from '../practice/stats'
 import {
   DEFAULT_SETTINGS,
   type Attempt,
   type BankFile,
   type CourseSettings,
+  type Folders,
   type Settings,
   type Storage,
   type Unstamped,
 } from '../storage/types'
 
-// M2: pick the file-based implementation when running inside Tauri.
-const storage: Storage = dexieStorage
+// Files next to the app in the desktop build, IndexedDB in the browser dev build.
+const storage: Storage = isTauri() ? fileStorage : dexieStorage
 
 export type Course = Omit<LoadedBank, 'images'> & {
   removable: boolean
@@ -45,6 +48,8 @@ type State = {
   bankErrors: BankError[]
   attempts: Attempt[]
   courseSettings: Record<string, CourseSettings>
+  /** Desktop app only: where banks and progress live. */
+  folders: Folders | null
   notices: Notice[]
   view: View
 }
@@ -56,6 +61,7 @@ type Actions = {
   removeCourse(courseId: string): Promise<void>
   recordAttempt(attempt: Omit<Unstamped<Attempt>, 'id'>): Promise<void>
   setExamDate(courseId: string, examDate: string | undefined): Promise<void>
+  openFolder(which: 'subjects' | 'data'): Promise<void>
   updateSettings(patch: Partial<Omit<Settings, 'updatedAt'>>): Promise<void>
   dismissError(fileName: string): void
   dismissNotice(id: string): void
@@ -87,19 +93,22 @@ export const useStore = create<State & Actions>()((set, get) => {
     bankErrors: [],
     attempts: [],
     courseSettings: {},
+    folders: null,
     notices: [],
     view: { name: 'overview' },
 
     async init() {
-      const [settings, attempts, courseSettings] = await Promise.all([
+      const [settings, attempts, courseSettings, folders] = await Promise.all([
         storage.loadSettings(),
         storage.listAttempts(),
         storage.listCourseSettings(),
+        storage.folders?.() ?? null,
       ])
       applySettings(settings)
       set({
         settings,
         attempts,
+        folders,
         courseSettings: Object.fromEntries(courseSettings.map((c) => [c.courseId, c])),
       })
       await get().reloadBanks()
@@ -158,6 +167,10 @@ export const useStore = create<State & Actions>()((set, get) => {
         examDate,
       })
       set((s) => ({ courseSettings: { ...s.courseSettings, [courseId]: stored } }))
+    },
+
+    async openFolder(which) {
+      await storage.openFolder?.(which)
     },
 
     async updateSettings(patch) {

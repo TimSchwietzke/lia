@@ -2,3 +2,5 @@ subjects/
 dist/
 design/
 SPEC.md
+src-tauri/target/
+src-tauri/gen/

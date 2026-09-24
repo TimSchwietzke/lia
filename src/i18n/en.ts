@@ -15,6 +15,11 @@ export const en = {
     light: 'Light',
     dark: 'Dark',
     language: 'Language',
+    files: 'Files',
+    openSubjects: 'Open subjects folder',
+    openData: 'Open data folder',
+    reload: 'Reload courses',
+    fallback: 'The app folder is read-only, so lia keeps your files here:',
   },
   today: {
     label: 'Today',
