@@ -20,8 +20,8 @@ jobs:
   test:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -42,8 +42,8 @@ jobs:
   windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -61,7 +61,7 @@ jobs:
           cp src-tauri/target/release/lia.exe out/lia-windows/
           cp subjects/example.json subjects/example-images.zip out/lia-windows/subjects/
           cp README.txt out/lia-windows/
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: lia-windows
           path: out/lia-windows
@@ -69,8 +69,8 @@ jobs:
   macos:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -91,16 +91,17 @@ jobs:
           cp README.txt out/lia-macos/
           # ditto keeps the app bundle intact (symlinks, permissions); artifact uploads would not.
           cd out && ditto -c -k --keepParent lia-macos lia-macos.zip
-      - uses: actions/upload-artifact@v4
+      # Uploaded as the zip itself (not zipped again), so the download is ready to use.
+      - uses: actions/upload-artifact@v7
         with:
-          name: lia-macos
           path: out/lia-macos.zip
+          archive: false
 
   linux:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -124,10 +125,10 @@ jobs:
           cp README.txt out/lia-linux/
           # zip keeps the executable bit; artifact uploads would drop it.
           cd out && zip -r lia-linux.zip lia-linux
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
-          name: lia-linux
           path: out/lia-linux.zip
+          archive: false
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
@@ -136,15 +137,16 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: artifacts
       - name: Collect zips
         run: |
           mkdir release
           (cd artifacts && zip -r ../release/lia-windows.zip lia-windows)
-          cp artifacts/lia-macos/lia-macos.zip artifacts/lia-linux/lia-linux.zip release/
+          find artifacts -name 'lia-macos.zip' -o -name 'lia-linux.zip' | xargs -I{} cp {} release/
           ls -l release
+          test "$(ls release | wc -l)" -eq 3
       - name: Create release
         env:
           GH_TOKEN: ${{ github.token }}
