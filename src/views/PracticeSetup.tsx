@@ -10,6 +10,7 @@ import styles from './PracticeSetup.module.css'
 
 const LIMITS = ['10', '20', '50']
 
+/** Practice one course. Everything is selected by default; the filters stay folded until needed. */
 export function PracticeSetup({ course }: { course: Course }) {
   const { t } = useTranslation()
   const go = useStore((s) => s.go)
@@ -46,14 +47,15 @@ export function PracticeSetup({ course }: { course: Course }) {
         </div>
       </div>
 
-      <section className={styles.group}>
-        <div className={styles.groupHead}>
-          <h2>{t('setup.topics')}</h2>
-          <Key onClick={() => setSelectedTopics(selectedTopics.length === topics.length ? [] : topics)}>
-            {selectedTopics.length === topics.length ? t('setup.clear') : t('setup.selectAll')}
-          </Key>
-        </div>
-        <div className={styles.toggles}>
+      <div className={styles.rows}>
+        <FilterRow
+          label={t('setup.topics')}
+          summary={
+            selectedTopics.length === topics.length
+              ? t('setup.allTopics')
+              : t('setup.someOf', { count: selectedTopics.length, total: topics.length })
+          }
+        >
           {topics.map((topic) => (
             <Toggle
               key={topic}
@@ -64,13 +66,17 @@ export function PracticeSetup({ course }: { course: Course }) {
               {topic}
             </Toggle>
           ))}
-        </div>
-      </section>
+        </FilterRow>
 
-      {typesInBank.length > 1 && (
-        <section className={styles.group}>
-          <h2>{t('setup.types')}</h2>
-          <div className={styles.toggles}>
+        {typesInBank.length > 1 && (
+          <FilterRow
+            label={t('setup.types')}
+            summary={
+              selectedTypes.length === typesInBank.length
+                ? t('setup.allTypes')
+                : t('setup.someOf', { count: selectedTypes.length, total: typesInBank.length })
+            }
+          >
             {typesInBank.map((type) => (
               <Toggle
                 key={type}
@@ -81,20 +87,20 @@ export function PracticeSetup({ course }: { course: Course }) {
                 {t(`types.${type}`)}
               </Toggle>
             ))}
-          </div>
-        </section>
-      )}
+          </FilterRow>
+        )}
 
-      <section className={styles.group}>
-        <h2>{t('setup.count')}</h2>
-        <Segmented
-          className={styles.limits}
-          label={t('setup.count')}
-          value={limits.includes(limit) ? limit : 'all'}
-          options={limits.map((n) => ({ value: n, label: n === 'all' ? t('setup.all') : n }))}
-          onChange={setLimit}
-        />
-      </section>
+        <div className={styles.row}>
+          <span className={styles.rowLabel}>{t('setup.count')}</span>
+          <Segmented
+            className={styles.limits}
+            label={t('setup.count')}
+            value={limits.includes(limit) ? limit : 'all'}
+            options={limits.map((n) => ({ value: n, label: n === 'all' ? t('setup.all') : n }))}
+            onChange={setLimit}
+          />
+        </div>
+      </div>
 
       <div className={styles.footer}>
         {sessionSize ? (
@@ -111,13 +117,31 @@ export function PracticeSetup({ course }: { course: Course }) {
   )
 }
 
+/** A label, a short summary of the choice, and a key that unfolds the toggles. */
+function FilterRow({ label, summary, children }: { label: string; summary: string; children: ReactNode }) {
+  const { t } = useTranslation()
+  const [open, setOpen] = useState(false)
+  return (
+    <div className={styles.filter}>
+      <div className={styles.row}>
+        <span className={styles.rowLabel}>{label}</span>
+        <span className={styles.summary}>{summary}</span>
+        <Key down={open} aria-expanded={open} onClick={() => setOpen(!open)}>
+          {open ? t('setup.done') : t('setup.change')}
+        </Key>
+      </div>
+      {open && <div className={styles.toggles}>{children}</div>}
+    </div>
+  )
+}
+
 /** A key that stays pressed while it is on. */
 function Toggle(props: { on: boolean; onToggle: () => void; count: number; children: ReactNode }) {
   return (
     <Key
       down={props.on}
       aria-pressed={props.on}
-      tone={props.on ? 'course' : undefined}
+      className={props.on ? undefined : styles.off}
       onClick={props.onToggle}
     >
       {props.children}

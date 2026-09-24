@@ -204,6 +204,7 @@ a:hover {
 }
 
 .tab[aria-current='page'],
+.tab[aria-current='step'],
 .tab[aria-checked='true'] {
   border-color: var(--key-edge);
   background: var(--key-face);
@@ -212,6 +213,7 @@ a:hover {
 }
 
 .tab[aria-current='page']:active,
+.tab[aria-current='step']:active,
 .tab[aria-checked='true']:active {
   background: var(--base);
   box-shadow: var(--key-down);

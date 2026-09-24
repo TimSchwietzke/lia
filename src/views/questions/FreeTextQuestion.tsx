@@ -7,18 +7,22 @@ import { useHotkeys } from '../../ui/useHotkeys'
 import styles from './questions.module.css'
 import { ActionBar, Explanation, Reveal, type QuestionProps } from './shared'
 
-export function FreeTextQuestion({ question, onSubmit, onNext }: QuestionProps<'free_text'>) {
+export function FreeTextQuestion({ question, onSubmit, onNext, active }: QuestionProps<'free_text'>) {
   const { t } = useTranslation()
   const [text, setText] = useState('')
   const [revealed, setRevealed] = useState(false)
   const [covered, setCovered] = useState<number[]>([])
+  const [done, setDone] = useState(false)
 
   const reveal = () => setRevealed(true)
   const finish = () => {
-    onSubmit({ type: 'free_text', text, coveredKeyPoints: covered })
+    if (!done) onSubmit({ type: 'free_text', text, coveredKeyPoints: covered })
+    setDone(true)
     onNext()
   }
-  const toggle = (i: number) => setCovered((c) => (c.includes(i) ? c.filter((x) => x !== i) : [...c, i]))
+  const toggle = (i: number) => {
+    if (!done) setCovered((c) => (c.includes(i) ? c.filter((x) => x !== i) : [...c, i]))
+  }
 
   useHotkeys(
     revealed
@@ -28,6 +32,7 @@ export function FreeTextQuestion({ question, onSubmit, onNext }: QuestionProps<'
           ...Object.fromEntries(question.keyPoints.map((_, i) => [String(i + 1), () => toggle(i)])),
         }
       : { 'Ctrl+Enter': reveal },
+    active,
   )
 
   return (
@@ -57,6 +62,7 @@ export function FreeTextQuestion({ question, onSubmit, onNext }: QuestionProps<'
                   key={i}
                   role="checkbox"
                   aria-checked={covered.includes(i)}
+                  aria-disabled={done}
                   tabIndex={0}
                   className={styles.option}
                   data-state={covered.includes(i) ? 'correct' : 'idle'}

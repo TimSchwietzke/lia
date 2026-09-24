@@ -13,6 +13,8 @@ export type QuestionProps<T extends QuestionType> = {
   onSubmit: (answer: AnswerOf<T>) => Grade
   /** Moves on to the next question. */
   onNext: () => void
+  /** Only the question on screen reacts to keyboard shortcuts; the others stay mounted but hidden. */
+  active: boolean
 }
 
 /** Result line plus explanation, shown after checking a choice or cloze answer. */

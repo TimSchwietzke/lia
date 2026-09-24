@@ -1,5 +1,4 @@
-import { X } from 'lucide-react'
-import { AnimatePresence, motion } from 'motion/react'
+import { Check, ChevronLeft, ChevronRight, CircleDot, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { courseColor, type Question } from '../bank/schema'
@@ -9,6 +8,7 @@ import type { QuestionRef } from '../practice/stats'
 import { findCourse, useStore, type Course } from '../state/store'
 import { ImagesContext } from '../ui/markdownContext'
 import { Bar, CodeBadge, Key, Label, Panel } from '../ui/primitives'
+import { questionSnippet } from '../ui/snippet'
 import { useHotkeys } from '../ui/useHotkeys'
 import styles from './PracticeSession.module.css'
 import { ChoiceQuestion } from './questions/ChoiceQuestion'
@@ -17,9 +17,12 @@ import { FlashcardQuestion } from './questions/FlashcardQuestion'
 import { FreeTextQuestion } from './questions/FreeTextQuestion'
 
 type Item = { ref: QuestionRef; course: Course; question: Question }
+type Result = { ref: QuestionRef; grade: Grade }
+type Status = 'open' | 'correct' | 'partly' | 'wrong'
 
 const msSince = (start: number) => Math.round(performance.now() - start)
-type Result = { ref: QuestionRef; grade: Grade }
+const statusOf = (g: Grade | undefined): Status =>
+  !g ? 'open' : g.correct ? 'correct' : g.score > 0 ? 'partly' : 'wrong'
 
 type Props = {
   items: QuestionRef[]
@@ -27,6 +30,11 @@ type Props = {
   courseId?: string
 }
 
+/**
+ * Laid out like an ILIAS test: the question list on the left, the question in the middle, and
+ * free navigation between questions. Visited questions stay mounted (hidden), so a half-written
+ * answer survives jumping around.
+ */
 export function PracticeSession({ items, courseId }: Props) {
   const { t } = useTranslation()
   const go = useStore((s) => s.go)
@@ -44,90 +52,169 @@ export function PracticeSession({ items, courseId }: Props) {
     [items, courses],
   )
   const [index, setIndex] = useState(0)
-  const [results, setResults] = useState<Result[]>([])
+  const [visited, setVisited] = useState<ReadonlySet<number>>(() => new Set([0]))
+  const [grades, setGrades] = useState<(Grade | undefined)[]>([])
   const [startedAt] = useState(() => Date.now())
   const [finishedAt, setFinishedAt] = useState<number | null>(null)
   const shownAt = useRef(0)
   const current = queue.at(index)
+  const answered = grades.filter(Boolean).length
 
   useEffect(() => {
     shownAt.current = performance.now()
   }, [index])
 
-  const submit = (answer: Answer): Grade => {
-    if (!current) throw new Error('No current question')
-    const result = grade(current.question, answer)
-    setResults((r) => [...r, { ref: current.ref, grade: result }])
-    void recordAttempt({
-      courseId: current.ref.courseId,
-      questionId: current.ref.questionId,
-      mode: 'practice',
-      answer,
-      score: result.score,
-      correct: result.correct,
-      answeredAt: new Date().toISOString(),
-      durationMs: msSince(shownAt.current),
-    })
-    return result
+  const goTo = (i: number) => {
+    if (i < 0 || i >= queue.length) return
+    setIndex(i)
+    setVisited((v) => (v.has(i) ? v : new Set(v).add(i)))
   }
+  const submitFor =
+    (i: number) =>
+    (answer: Answer): Grade => {
+      const { ref, question } = queue[i]
+      const result = grade(question, answer)
+      setGrades((g) => Object.assign([...g], { [i]: result }))
+      void recordAttempt({
+        ...ref,
+        mode: 'practice',
+        answer,
+        score: result.score,
+        correct: result.correct,
+        answeredAt: new Date().toISOString(),
+        durationMs: msSince(shownAt.current),
+      })
+      return result
+    }
   const finish = () => setFinishedAt(Date.now())
-  const next = () => (index + 1 < queue.length ? setIndex(index + 1) : finish())
-  const end = () => (results.length ? finish() : go({ name: 'overview' }))
+  /** After answering: the next unanswered question (wrapping around), or the summary if none is left. */
+  const advance = () => {
+    const open = queue.map((_, k) => (index + 1 + k) % queue.length).find((i) => i !== index && !grades[i])
+    if (open === undefined) finish()
+    else goTo(open)
+  }
+  const end = () => (answered ? finish() : go({ name: 'overview' }))
+
+  useHotkeys(
+    { Escape: end, ArrowLeft: () => goTo(index - 1), ArrowRight: () => goTo(index + 1) },
+    finishedAt === null,
+  )
 
   if (finishedAt !== null || !current) {
+    const results = queue.flatMap((item, i): Result[] => {
+      const g = grades[i]
+      return g ? [{ ref: item.ref, grade: g }] : []
+    })
     return <Summary results={results} elapsedMs={(finishedAt ?? startedAt) - startedAt} courseId={courseId} />
   }
 
   const meta = current.course.bank.course
-  return (
-    <div className={styles.page} data-color={courseColor(meta)}>
-      <SessionHotkeys onEscape={end} />
-      <header className={styles.bar}>
-        <Key
-          size="icon"
-          className={styles.end}
-          onClick={end}
-          aria-label={t('session.end')}
-          title={t('session.end')}
-        >
-          <X aria-hidden />
-        </Key>
-        <Bar
-          value={index / queue.length}
-          color="var(--course)"
-          thick
-          label={t('session.progress', { current: index + 1, total: queue.length })}
-        />
-        <span className={`mono ${styles.count}`}>
-          {index + 1} / {queue.length}
-        </span>
-      </header>
+  const singleCourse = queue.every((item) => item.course === queue[0].course)
 
-      <ImagesContext.Provider value={current.course.imageUrls}>
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.article
-            key={index}
-            lang={meta.language}
-            initial={{ opacity: 0, x: 12 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -12 }}
-            transition={{ duration: 0.14 }}
-          >
-            <div className={styles.meta}>
-              <CodeBadge code={meta.code} small />
-              <span>{current.question.topic}</span>
-              <Difficulty level={current.question.difficulty} />
-            </div>
-            <QuestionView question={current.question} onSubmit={submit} onNext={next} />
-          </motion.article>
-        </AnimatePresence>
-      </ImagesContext.Provider>
+  return (
+    <div className={styles.layout} data-color={courseColor(meta)}>
+      <Panel className={styles.sidebar}>
+        <div className={styles.sideHead}>
+          {singleCourse ? (
+            <>
+              <CodeBadge code={meta.code} />
+              <h1>{meta.name}</h1>
+            </>
+          ) : (
+            <h1>{t('session.mixed')}</h1>
+          )}
+        </div>
+        <div className={styles.progress}>
+          <Bar
+            value={answered / queue.length}
+            color="var(--course)"
+            label={t('session.answered', { count: answered, total: queue.length })}
+          />
+          <span className="mono">
+            {answered} / {queue.length}
+          </span>
+        </div>
+        <nav className={styles.list} aria-label={t('session.questions')}>
+          {queue.map((item, i) => {
+            const status = statusOf(grades[i])
+            const text = questionSnippet(item.question)
+            return (
+              <button
+                key={i}
+                type="button"
+                className={`tab ${styles.item}`}
+                aria-current={i === index ? 'step' : undefined}
+                data-status={status}
+                title={text}
+                onClick={() => goTo(i)}
+              >
+                <span className={`mono ${styles.itemNum}`}>{i + 1}</span>
+                <span className={styles.itemText}>{text}</span>
+                <StatusMark status={status} />
+              </button>
+            )
+          })}
+        </nav>
+        <Key size="md" onClick={end}>
+          {t('session.end')}
+        </Key>
+      </Panel>
+
+      <div className={styles.main}>
+        <header className={styles.questionHead}>
+          <span className={styles.questionNumber}>
+            {t('session.progress', { current: index + 1, total: queue.length })}
+          </span>
+          {!singleCourse && <CodeBadge code={meta.code} small />}
+          <span>{current.question.topic}</span>
+          <Difficulty level={current.question.difficulty} />
+        </header>
+
+        {queue.map(
+          (item, i) =>
+            visited.has(i) && (
+              <section
+                key={i}
+                hidden={i !== index}
+                className={styles.question}
+                lang={item.course.bank.course.language}
+                data-color={courseColor(item.course.bank.course)}
+              >
+                <ImagesContext.Provider value={item.course.imageUrls}>
+                  <QuestionView
+                    question={item.question}
+                    onSubmit={submitFor(i)}
+                    onNext={advance}
+                    active={i === index}
+                  />
+                </ImagesContext.Provider>
+              </section>
+            ),
+        )}
+
+        <nav className={styles.pager}>
+          <Key disabled={index === 0} onClick={() => goTo(index - 1)}>
+            <ChevronLeft aria-hidden />
+            {t('session.previous')}
+          </Key>
+          <Key disabled={index === queue.length - 1} onClick={() => goTo(index + 1)}>
+            {t('session.next')}
+            <ChevronRight aria-hidden />
+          </Key>
+        </nav>
+      </div>
     </div>
   )
 }
 
-function QuestionView(props: { question: Question; onSubmit: (a: Answer) => Grade; onNext: () => void }) {
-  const { question, ...handlers } = props
+type QuestionViewProps = {
+  question: Question
+  onSubmit: (a: Answer) => Grade
+  onNext: () => void
+  active: boolean
+}
+
+function QuestionView({ question, ...handlers }: QuestionViewProps) {
   switch (question.type) {
     case 'single_choice':
     case 'multiple_choice':
@@ -141,10 +228,21 @@ function QuestionView(props: { question: Question; onSubmit: (a: Answer) => Grad
   }
 }
 
-/** Separate component so Escape works in every question without each one registering it. */
-function SessionHotkeys({ onEscape }: { onEscape: () => void }) {
-  useHotkeys({ Escape: onEscape })
-  return null
+function StatusMark({ status }: { status: Status }) {
+  const { t } = useTranslation()
+  const label = {
+    open: t('session.statusOpen'),
+    correct: t('session.statusCorrect'),
+    partly: t('session.statusPartly'),
+    wrong: t('session.statusWrong'),
+  }[status]
+  const Icon = { open: null, correct: Check, partly: CircleDot, wrong: X }[status]
+  return (
+    <span className={styles.mark} data-status={status}>
+      {Icon && <Icon aria-hidden />}
+      <span className="visually-hidden">{label}</span>
+    </span>
+  )
 }
 
 function Difficulty({ level }: { level: number }) {

@@ -8,20 +8,26 @@ import { useHotkeys } from '../../ui/useHotkeys'
 import styles from './questions.module.css'
 import { ActionBar, Explanation, type QuestionProps } from './shared'
 
-export function FlashcardQuestion({ question, onSubmit, onNext }: QuestionProps<'flashcard'>) {
+export function FlashcardQuestion({ question, onSubmit, onNext, active }: QuestionProps<'flashcard'>) {
   const { t } = useTranslation()
   const [flipped, setFlipped] = useState(false)
+  const [rated, setRated] = useState<Rating | null>(null)
 
   const flip = () => setFlipped(true)
   const rate = (rating: Rating) => {
+    if (rated) return
+    setRated(rating)
     onSubmit({ type: 'flashcard', rating })
     onNext()
   }
 
   useHotkeys(
-    flipped
-      ? Object.fromEntries(RATINGS.map((rating, i) => [String(i + 1), () => rate(rating)]))
-      : { ' ': flip, Enter: flip },
+    rated
+      ? { Enter: onNext }
+      : flipped
+        ? Object.fromEntries(RATINGS.map((rating, i) => [String(i + 1), () => rate(rating)]))
+        : { ' ': flip, Enter: flip },
+    active,
   )
 
   return (
@@ -57,7 +63,13 @@ export function FlashcardQuestion({ question, onSubmit, onNext }: QuestionProps<
           <div className={styles.ratings}>
             <span className={styles.ratingLabel}>{t('flashcard.rate')}</span>
             {RATINGS.map((rating, i) => (
-              <Key key={rating} size="md" onClick={() => rate(rating)}>
+              <Key
+                key={rating}
+                size="md"
+                down={rated === rating}
+                disabled={rated !== null && rated !== rating}
+                onClick={() => rate(rating)}
+              >
                 {t(`flashcard.${rating}`)} <kbd>{i + 1}</kbd>
               </Key>
             ))}

@@ -8,7 +8,7 @@ import { useHotkeys } from '../../ui/useHotkeys'
 import styles from './questions.module.css'
 import { ActionBar, Feedback, type QuestionProps } from './shared'
 
-export function ClozeQuestion({ question, onSubmit, onNext }: QuestionProps<'cloze'>) {
+export function ClozeQuestion({ question, onSubmit, onNext, active }: QuestionProps<'cloze'>) {
   const { t } = useTranslation()
   const [values, setValues] = useState(() => question.blanks.map(() => ''))
   const [grade, setGrade] = useState<Grade | null>(null)
@@ -17,7 +17,7 @@ export function ClozeQuestion({ question, onSubmit, onNext }: QuestionProps<'clo
     if (grade) onNext()
     else setGrade(onSubmit({ type: 'cloze', values }))
   }
-  useHotkeys({ Enter: submit })
+  useHotkeys({ Enter: submit }, active)
 
   const renderBlank = useCallback(
     (n: number) => {

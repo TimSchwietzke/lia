@@ -7,12 +7,12 @@ type Handlers = Partial<Record<string, () => void>>
  * e.g. { Enter: check, '1': selectFirst, ' ': flip, 'Ctrl+Enter': reveal }.
  * While the user types in a field only Ctrl combinations and Escape fire. Like in a form, Space
  * toggles a focused toggle (chip, option) and Enter still submits; Enter and Space on a focused
- * plain button or link keep their native meaning.
+ * plain button or link keep their native meaning. `enabled: false` turns all of them off.
  */
-export function useHotkeys(handlers: Handlers) {
+export function useHotkeys(handlers: Handlers, enabled = true) {
   const ref = useRef(handlers)
   useEffect(() => {
-    ref.current = handlers
+    ref.current = enabled ? handlers : {}
   })
 
   useEffect(() => {

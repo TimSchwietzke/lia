@@ -135,6 +135,8 @@ Agreed during planning. Later sessions: treat these as part of the spec.
 - **Import:** a bank whose course id already exists replaces the old file and keeps progress (notice, no confirm dialog). Two files with the same course id on disk: the first wins, the other is shown as an error.
 - **Exam dates:** per-course user setting stored with the progress (`courseSettings`), set on the Courses page.
 - **Type sizes:** UI text 14px, question prompts 17px in the practice view.
+- **Lighting:** raised panels, keys and the popover use a soft drop shadow plus a 1px rim light on the top-left edge instead of the mockup's light halo (the halo looked foggy). Sunk elements keep the mockup's inset shadows.
+- **Practice session layout (ILIAS style):** question list on the left (number, short text, status), the question in the middle, Previous / Next to move freely; the setup page keeps filters collapsed by default.
 - **Mockup conventions:** where the design reference explicitly uses them (uppercase tile labels, middle-dot meta strings, subtle convex key gradients), follow it. Otherwise no filler text, no decorative gradients and no em dashes in UI strings.
 - **Stack:** Vite 8, React 19, TypeScript strict, Zod 4, Dexie 4, Zustand, react-markdown + remark-gfm + remark-math + rehype-katex (KaTeX pinned to rehype-katex's 0.16 line), Shiki (JS regex engine, bundled languages, Catppuccin themes), fflate, Motion, i18next, lucide-react, Fontsource (Geist, Geist Mono, Bricolage Grotesque), CSS Modules. Lint: oxlint + Prettier.
 - **Highlighted languages:** python, java, c, cpp, csharp, javascript, typescript, sql, bash, haskell, prolog, rust, go, kotlin, json, yaml, html, xml, css, latex, asm.

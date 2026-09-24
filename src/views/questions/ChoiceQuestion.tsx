@@ -15,6 +15,7 @@ export function ChoiceQuestion({
   question,
   onSubmit,
   onNext,
+  active,
 }: QuestionProps<'single_choice' | 'multiple_choice'>) {
   const { t } = useTranslation()
   const multi = question.type === 'multiple_choice'
@@ -38,12 +39,15 @@ export function ChoiceQuestion({
     return correct ? 'missed' : 'dimmed'
   }
 
-  useHotkeys({
-    Enter: grade ? onNext : check,
-    ...Object.fromEntries(
-      order.map((optionIndex, position) => [String(position + 1), () => toggle(optionIndex)]),
-    ),
-  })
+  useHotkeys(
+    {
+      Enter: grade ? onNext : check,
+      ...Object.fromEntries(
+        order.map((optionIndex, position) => [String(position + 1), () => toggle(optionIndex)]),
+      ),
+    },
+    active,
+  )
 
   return (
     <>

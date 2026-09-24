@@ -1,7 +1,7 @@
 .panel {
-  gap: 28px;
-  width: min(760px, 100%);
-  margin: 0 auto;
+  gap: 24px;
+  width: min(620px, 100%);
+  margin: 24px auto 0;
   padding: 26px 28px 28px;
 }
 
@@ -21,28 +21,42 @@
   font-size: 13px;
 }
 
-.group {
+.rows {
   display: flex;
   flex-direction: column;
-  gap: 12px;
 }
 
-.group h2 {
-  color: var(--text-muted);
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.groupHead {
+.row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
+  min-height: 56px;
+}
+
+.filter,
+.rows > .row {
+  border-top: 1px solid var(--divider);
+}
+
+.rowLabel {
+  flex-grow: 1;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.summary {
+  font-size: 13px;
 }
 
 .toggles {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
+  padding: 2px 0 16px;
+}
+
+.off {
+  color: var(--text-muted);
 }
 
 .count {
@@ -52,7 +66,7 @@
 }
 
 .limits {
-  max-width: 320px;
+  width: 240px;
 }
 
 .footer {

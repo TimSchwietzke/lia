@@ -1,6 +1,7 @@
 /*
  * Design tokens. Dark is the default; light overrides the same names with its own tuned values.
- * Dark values come from design/dashboard-reference.dc.html.
+ * Dark values come from design/dashboard-reference.dc.html, except raised panels and keys: they use a
+ * soft drop shadow and a 1px rim light instead of the reference's light halo (user feedback).
  *
  * Depth grammar (SPEC, Design): everything sits on one base colour.
  *   raised  = panels (tiles, popover)
@@ -42,9 +43,8 @@
 
   /* Depth */
   --raised:
-    9px 9px 20px rgba(0, 0, 0, 0.55), -7px -7px 16px rgba(255, 255, 255, 0.035),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03);
-  --float: 12px 12px 28px rgba(0, 0, 0, 0.6), -6px -6px 16px rgba(255, 255, 255, 0.035);
+    0 6px 16px rgba(0, 0, 0, 0.38), 0 1px 3px rgba(0, 0, 0, 0.35), inset 1px 1px 0 rgba(255, 255, 255, 0.045);
+  --float: 0 14px 32px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.35);
   --float-edge: rgba(255, 255, 255, 0.04);
   --sunk: inset 4px 4px 9px rgba(0, 0, 0, 0.5), inset -3px -3px 7px rgba(255, 255, 255, 0.03);
   --sunk-sm: inset 3px 3px 6px rgba(0, 0, 0, 0.45), inset -2px -2px 5px rgba(255, 255, 255, 0.03);
@@ -54,13 +54,13 @@
 
   --key-face: linear-gradient(145deg, #23262e, #1a1d23);
   --key-edge: rgba(255, 255, 255, 0.045);
-  --key-sm: 4px 4px 9px rgba(0, 0, 0, 0.5), -3px -3px 7px rgba(255, 255, 255, 0.04);
-  --key-md: 5px 5px 11px rgba(0, 0, 0, 0.5), -4px -4px 9px rgba(255, 255, 255, 0.035);
-  --key-lg: 6px 6px 13px rgba(0, 0, 0, 0.5), -4px -4px 10px rgba(255, 255, 255, 0.035);
+  --key-sm: 0 2px 5px rgba(0, 0, 0, 0.4), inset 1px 1px 0 rgba(255, 255, 255, 0.05);
+  --key-md: 0 3px 7px rgba(0, 0, 0, 0.4), inset 1px 1px 0 rgba(255, 255, 255, 0.05);
+  --key-lg: 0 4px 10px rgba(0, 0, 0, 0.4), inset 1px 1px 0 rgba(255, 255, 255, 0.05);
   --key-down: inset 4px 4px 8px rgba(0, 0, 0, 0.55), inset -3px -3px 6px rgba(255, 255, 255, 0.035);
   --accent-key:
-    7px 7px 16px rgba(0, 0, 0, 0.55), -4px -4px 10px rgba(255, 255, 255, 0.04),
-    inset 0 2px 0 rgba(255, 255, 255, 0.35), inset 0 -3px 0 rgba(0, 0, 0, 0.15);
+    0 4px 12px rgba(0, 0, 0, 0.42), inset 0 2px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.15);
   --accent-key-down: inset 3px 3px 7px rgba(50, 30, 120, 0.5), inset -2px -2px 5px rgba(255, 255, 255, 0.28);
   --logo-emboss: 0 -1px 0 rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.05);
 
@@ -105,9 +105,9 @@
   --rose: #a3366c;
 
   --raised:
-    9px 9px 20px rgba(142, 150, 175, 0.55), -7px -7px 16px rgba(255, 255, 255, 0.85),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
-  --float: 12px 12px 28px rgba(142, 150, 175, 0.6), -6px -6px 16px rgba(255, 255, 255, 0.85);
+    0 6px 16px rgba(120, 128, 155, 0.28), 0 1px 3px rgba(120, 128, 155, 0.3),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.8);
+  --float: 0 14px 32px rgba(120, 128, 155, 0.35), 0 2px 6px rgba(120, 128, 155, 0.3);
   --float-edge: rgba(255, 255, 255, 0.7);
   --sunk: inset 4px 4px 9px rgba(142, 150, 175, 0.55), inset -3px -3px 7px rgba(255, 255, 255, 0.85);
   --sunk-sm: inset 3px 3px 6px rgba(142, 150, 175, 0.5), inset -2px -2px 5px rgba(255, 255, 255, 0.85);
@@ -118,13 +118,13 @@
 
   --key-face: linear-gradient(145deg, #eef0f5, #d9dde5);
   --key-edge: rgba(255, 255, 255, 0.7);
-  --key-sm: 4px 4px 9px rgba(142, 150, 175, 0.55), -3px -3px 7px rgba(255, 255, 255, 0.9);
-  --key-md: 5px 5px 11px rgba(142, 150, 175, 0.55), -4px -4px 9px rgba(255, 255, 255, 0.9);
-  --key-lg: 6px 6px 13px rgba(142, 150, 175, 0.55), -4px -4px 10px rgba(255, 255, 255, 0.9);
+  --key-sm: 0 2px 5px rgba(120, 128, 155, 0.35), inset 1px 1px 0 rgba(255, 255, 255, 0.8);
+  --key-md: 0 3px 7px rgba(120, 128, 155, 0.35), inset 1px 1px 0 rgba(255, 255, 255, 0.8);
+  --key-lg: 0 4px 10px rgba(120, 128, 155, 0.35), inset 1px 1px 0 rgba(255, 255, 255, 0.8);
   --key-down: inset 4px 4px 8px rgba(142, 150, 175, 0.6), inset -3px -3px 6px rgba(255, 255, 255, 0.9);
   --accent-key:
-    7px 7px 16px rgba(142, 150, 175, 0.6), -4px -4px 10px rgba(255, 255, 255, 0.9),
-    inset 0 2px 0 rgba(255, 255, 255, 0.35), inset 0 -3px 0 rgba(0, 0, 0, 0.12);
+    0 4px 12px rgba(120, 128, 155, 0.4), inset 0 2px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.12);
   --logo-emboss: 0 1px 0 rgba(255, 255, 255, 0.8), 0 -1px 0 rgba(0, 0, 0, 0.08);
 }
 
