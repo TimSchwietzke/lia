@@ -129,14 +129,6 @@ function SettingsMenu() {
                     <FolderOpen aria-hidden />
                     {t('settings.openData')}
                   </Key>
-                  {!folders.portable && (
-                    <p className={styles.note}>
-                      {t('settings.fallback')}{' '}
-                      <span className="mono" title={folders.data}>
-                        {folders.data}
-                      </span>
-                    </p>
-                  )}
                 </>
               )}
               <Key className={styles.wide} onClick={() => void reloadBanks()}>

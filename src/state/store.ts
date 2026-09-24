@@ -98,11 +98,16 @@ export const useStore = create<State & Actions>()((set, get) => {
     view: { name: 'overview' },
 
     async init() {
-      const [settings, attempts, courseSettings, folders] = await Promise.all([
+      const folders = (await storage.folders?.()) ?? null
+      // lia only works inside its own folder; if that is read-only, the app shows why and stops.
+      if (folders && !folders.writable) {
+        set({ folders, ready: true })
+        return
+      }
+      const [settings, attempts, courseSettings] = await Promise.all([
         storage.loadSettings(),
         storage.listAttempts(),
         storage.listCourseSettings(),
-        storage.folders?.() ?? null,
       ])
       applySettings(settings)
       set({

@@ -8,7 +8,7 @@ use std::fs::{self, OpenOptions};
 use std::io::Write;
 use std::path::Path;
 use tauri::ipc::{InvokeBody, Request, Response};
-use tauri::{Manager, State};
+use tauri::{Manager, State, WebviewWindowBuilder};
 use tauri_plugin_opener::OpenerExt;
 
 type CommandResult<T> = Result<T, String>;
@@ -29,7 +29,7 @@ fn write_atomic(path: &Path, bytes: &[u8]) -> CommandResult<()> {
 struct FolderInfo {
     subjects: String,
     data: String,
-    portable: bool,
+    writable: bool,
 }
 
 #[tauri::command]
@@ -37,7 +37,7 @@ fn folders(folders: State<Folders>) -> FolderInfo {
     FolderInfo {
         subjects: folders.subjects.display().to_string(),
         data: folders.data.display().to_string(),
-        portable: folders.portable,
+        writable: folders.writable,
     }
 }
 
@@ -124,8 +124,19 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
-            let app_data = app.path().app_data_dir()?;
-            app.manage(Folders::resolve(app_data));
+            let folders = Folders::resolve();
+            // The web view keeps its own storage and cache in data/ as well, not in the user
+            // profile (Windows and Linux; macOS does not allow moving it). If data/ is not
+            // writable, a temporary folder is used just long enough to show that message.
+            let webview_data = if folders.writable {
+                folders.data.join("webview")
+            } else {
+                std::env::temp_dir().join("lia-webview")
+            };
+            app.manage(folders);
+            WebviewWindowBuilder::from_config(app.handle(), &app.config().app.windows[0])?
+                .data_directory(webview_data)
+                .build()?;
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![

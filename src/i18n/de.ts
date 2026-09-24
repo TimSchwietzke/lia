@@ -21,7 +21,12 @@ export const de: typeof en = {
     openSubjects: 'Ordner subjects öffnen',
     openData: 'Ordner data öffnen',
     reload: 'Kurse neu laden',
-    fallback: 'Der App-Ordner ist schreibgeschützt, deshalb liegen deine Dateien hier:',
+  },
+  folderError: {
+    title: 'lia kann in seinem Ordner nicht speichern',
+    body: 'lia speichert Kurse und Fortschritt nur im eigenen Ordner und kann hier nicht schreiben:',
+    fix: 'Verschiebe den ganzen lia-Ordner an einen Ort, an dem du Dateien speichern kannst, zum Beispiel Dokumente, und starte lia neu.',
+    mac: 'Auf dem Mac, falls der Ordner schon an so einem Ort liegt: lia.app im Finder einmal aus dem Ordner heraus und wieder zurück verschieben.',
   },
   today: {
     label: 'Heute dran',

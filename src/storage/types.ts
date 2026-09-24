@@ -45,8 +45,8 @@ export type BankFile = {
 export type Folders = {
   subjects: string
   data: string
-  /** True if the folders sit next to the app, false if lia fell back to the user's app data folder. */
-  portable: boolean
+  /** False if lia cannot write next to the app. It never falls back to another folder. */
+  writable: boolean
 }
 
 /** Records are written without `updatedAt`; the storage stamps it and returns the stored record. */

@@ -44,7 +44,7 @@ Hard requirements:
       data/         <- progress, settings, backups, exam exports (created automatically)
       README.txt    <- short guide for classmates (EN + DE)
 
-- If the app folder is not writable (e.g. Program Files on Windows, or the app bundle on macOS), fall back to the OS's per-user app data folder and show where data is stored.
+- lia only ever writes into its own folder, never into other user folders. If the app folder is not writable (e.g. Program Files on Windows, or a translocated app on macOS), lia shows a message asking to move the folder somewhere writable instead of falling back to another location. (Changed from the original per-user fallback at the user's request.)
 - Updating = replacing the app file; `subjects/` and `data/` stay untouched.
 - "Open subjects folder" and "Open data folder" live in the settings popover (see Design).
 
@@ -138,6 +138,7 @@ Agreed during planning. Later sessions: treat these as part of the spec.
 - **Lighting:** raised panels, keys and the popover use a soft drop shadow plus a 1px rim light on the top-left edge instead of the mockup's light halo (the halo looked foggy). Sunk elements keep the mockup's inset shadows.
 - **Practice session layout (ILIAS style):** question list on the left (number, short text, status), the question in the middle, Previous / Next to move freely; the setup page keeps filters collapsed by default.
 - **Mockup conventions:** where the design reference explicitly uses them (uppercase tile labels, middle-dot meta strings, subtle convex key gradients), follow it. Otherwise no filler text, no decorative gradients and no em dashes in UI strings.
+- **Only the app folder:** the web view's own storage and cache also live in `data/webview` (Windows and Linux). macOS does not allow moving WebKit's cache, so WebKit itself keeps a small cache under `~/Library` there.
 - **Desktop files:** `data/settings.json`, `data/courses.json` and the append-only `data/attempts.jsonl`; every document and log line carries a `version` and is upgraded by migrations when read. A file lia cannot read is kept as a copy (`*.unreadable-<time>`), never overwritten silently.
 - **Builds:** Windows ships as a plain `lia.exe` (no installer; WebView2 is part of Windows 10/11), macOS as an ad-hoc signed universal `lia.app` (macOS 12+), Linux as an AppImage built on Ubuntu 22.04. GitHub Actions builds all three on every push (artifacts) and attaches the zips to a release for tags `v*`.
 - **Stack:** Vite 8, React 19, TypeScript strict, Zod 4, Dexie 4, Zustand, react-markdown + remark-gfm + remark-math + rehype-katex (KaTeX pinned to rehype-katex's 0.16 line), Shiki (JS regex engine, bundled languages, Catppuccin themes), fflate, Motion, i18next, lucide-react, Fontsource (Geist, Geist Mono, Bricolage Grotesque), CSS Modules. Lint: oxlint + Prettier.

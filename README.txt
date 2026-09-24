@@ -39,12 +39,14 @@ Your progress
   Updating lia: replace only the app (lia.exe, lia.app or lia.AppImage).
   Keep "subjects" and "data".
 
-  If the app folder is read-only (for example in Program Files), lia keeps
-  its files in your user folder instead. The settings (gear icon) show where.
+  lia only ever writes into its own folder, never anywhere else on your
+  computer. If that folder is read-only (for example in Program Files), lia
+  says so; move the whole folder somewhere you can save files, such as
+  Documents, and start lia again.
 
-  macOS: if lia does not show the courses from your "subjects" folder, macOS
-  is running it from a hidden temporary copy. In Finder, move lia.app out of
-  its folder and back in once, then start it again.
+  macOS: if lia says it cannot save although the folder is in such a place,
+  macOS is running it from a hidden temporary copy. In Finder, move lia.app
+  out of its folder and back in once, then start it again.
 
 
 DEUTSCH
@@ -83,10 +85,12 @@ Dein Fortschritt
   lia aktualisieren: nur die App ersetzen (lia.exe, lia.app oder
   lia.AppImage). "subjects" und "data" behalten.
 
-  Ist der App-Ordner schreibgeschützt (zum Beispiel unter Programme), legt lia
-  seine Dateien in deinem Benutzerordner ab. Wo genau, steht in den
-  Einstellungen (Zahnrad).
+  lia schreibt nur in seinen eigenen Ordner, nirgendwo sonst auf deinem
+  Computer. Ist dieser Ordner schreibgeschützt (zum Beispiel unter Programme),
+  meldet lia das; verschiebe dann den ganzen Ordner an einen Ort, an dem du
+  Dateien speichern kannst, etwa Dokumente, und starte lia neu.
 
-  macOS: Zeigt lia die Kurse aus deinem Ordner "subjects" nicht an, startet
-  macOS die App aus einer versteckten temporären Kopie. Verschiebe lia.app im
-  Finder einmal aus ihrem Ordner heraus und wieder zurück und starte sie neu.
+  macOS: Meldet lia, dass es nicht speichern kann, obwohl der Ordner an so
+  einem Ort liegt, startet macOS die App aus einer versteckten temporären
+  Kopie. Verschiebe lia.app im Finder einmal aus ihrem Ordner heraus und
+  wieder zurück und starte sie neu.

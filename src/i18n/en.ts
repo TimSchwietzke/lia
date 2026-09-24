@@ -19,7 +19,12 @@ export const en = {
     openSubjects: 'Open subjects folder',
     openData: 'Open data folder',
     reload: 'Reload courses',
-    fallback: 'The app folder is read-only, so lia keeps your files here:',
+  },
+  folderError: {
+    title: 'lia cannot save in its folder',
+    body: 'lia keeps your courses and progress only in its own folder, and it cannot write here:',
+    fix: 'Move the whole lia folder to a place where you can save files, for example Documents, and start lia again.',
+    mac: 'On a Mac, if the folder is already in such a place: in Finder, move lia.app out of the folder and back in once.',
   },
   today: {
     label: 'Today',

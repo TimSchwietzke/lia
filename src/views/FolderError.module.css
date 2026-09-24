@@ -1,0 +1,24 @@
+.panel {
+  gap: 12px;
+  width: min(560px, calc(100% - 32px));
+  margin: 18vh auto 0;
+  padding: 28px;
+  font-size: 14px;
+}
+
+.panel h1 {
+  color: var(--bad);
+  font-size: 18px;
+}
+
+.path {
+  padding: 10px 12px;
+  border-radius: var(--r-well);
+  box-shadow: var(--sunk);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.muted {
+  color: var(--text-muted);
+}

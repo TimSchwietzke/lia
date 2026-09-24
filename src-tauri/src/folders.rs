@@ -1,8 +1,8 @@
 //! Where lia keeps question banks (`subjects/`) and progress (`data/`).
 //!
-//! Portable layout: both folders sit next to the app (the `.exe`, the `.app` bundle or the
-//! `.AppImage`). If that folder is not writable (Program Files, a read-only volume, a macOS
-//! "translocated" app), lia falls back to the per-user app data folder.
+//! Both folders sit next to the app (the `.exe`, the `.app` bundle or the `.AppImage`), and lia
+//! never writes anywhere else. If that folder is not writable (Program Files, a read-only volume,
+//! a macOS "translocated" app), the app says so instead of falling back to another folder.
 
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -10,26 +10,20 @@ use std::path::{Path, PathBuf};
 pub struct Folders {
     pub subjects: PathBuf,
     pub data: PathBuf,
-    /// True if the folders are next to the app, false if lia fell back to the app data folder.
-    pub portable: bool,
+    /// False if lia cannot write next to the app; the UI then asks the user to move the folder.
+    pub writable: bool,
 }
 
 impl Folders {
-    pub fn resolve(app_data_dir: PathBuf) -> Folders {
-        if let Some(base) = portable_base() {
-            let folders = Folders::inside(&base, true);
-            if folders.prepare().is_ok() {
-                return folders;
-            }
-        }
-        let folders = Folders::inside(&app_data_dir, false);
-        // If even this fails, the file commands report the error when they are used.
-        let _ = folders.prepare();
+    pub fn resolve() -> Folders {
+        let base = portable_base().unwrap_or_else(|| PathBuf::from("."));
+        let mut folders = Folders::inside(&base);
+        folders.writable = folders.prepare().is_ok();
         folders
     }
 
-    fn inside(base: &Path, portable: bool) -> Folders {
-        Folders { subjects: base.join("subjects"), data: base.join("data"), portable }
+    fn inside(base: &Path) -> Folders {
+        Folders { subjects: base.join("subjects"), data: base.join("data"), writable: false }
     }
 
     /// Creates both folders and proves that `data/` is writable.
@@ -122,7 +116,7 @@ mod tests {
     #[test]
     fn prepare_creates_both_folders_where_writable() {
         let root = std::env::temp_dir().join(format!("lia-test-{}", std::process::id()));
-        let folders = Folders::inside(&root, true);
+        let folders = Folders::inside(&root);
         assert!(folders.prepare().is_ok());
         assert!(folders.subjects.is_dir() && folders.data.is_dir());
         fs::remove_dir_all(root).unwrap();
@@ -131,6 +125,6 @@ mod tests {
     #[cfg(target_os = "linux")]
     #[test]
     fn prepare_fails_where_not_writable() {
-        assert!(Folders::inside(Path::new("/proc/lia"), true).prepare().is_err());
+        assert!(Folders::inside(Path::new("/proc/lia")).prepare().is_err());
     }
 }

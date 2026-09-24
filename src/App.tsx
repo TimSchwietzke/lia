@@ -5,6 +5,7 @@ import { findCourse, useStore } from './state/store'
 import styles from './App.module.css'
 import { AppHeader, type Section } from './views/AppHeader'
 import { Courses } from './views/courses/Courses'
+import { FolderError } from './views/FolderError'
 import { Overview } from './views/overview/Overview'
 import { PracticeSession } from './views/PracticeSession'
 import { PracticeSetup } from './views/PracticeSetup'
@@ -13,6 +14,7 @@ export function App() {
   const ready = useStore((s) => s.ready)
   const view = useStore((s) => s.view)
   const courses = useStore((s) => s.courses)
+  const folders = useStore((s) => s.folders)
   const init = useStore((s) => s.init)
   const importFiles = useStore((s) => s.importFiles)
   const dragging = useFileDrop((files) => void importFiles(files))
@@ -22,6 +24,7 @@ export function App() {
   }, [init])
 
   if (!ready) return null
+  if (folders && !folders.writable) return <FolderError data={folders.data} />
 
   // A setup view whose course disappeared (removed, or broken after an update) falls back to the overview.
   const setupCourse = view.name === 'setup' ? findCourse(courses, view.courseId) : undefined
